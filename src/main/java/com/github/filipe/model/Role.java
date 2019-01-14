@@ -12,27 +12,34 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "roles")
 public class Role implements Serializable {
-	
+
 	private static final long serialVersionUID = -4426951619843181851L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
+
 	@Column
 	private String description;
-	
+
 	@Column
 	private Boolean active;
-	
+
 	@ManyToMany(mappedBy = "roles")
 	private Set<Profile> profiles;
 
-	public Role() {}
+	public Role() {
+	}
+
+	public Role(String description, Boolean active, Set<Profile> profiles) {
+		super();
+		this.description = description;
+		this.active = active;
+		this.profiles = profiles;
+	}
 
 	public Long getId() {
 		return id;

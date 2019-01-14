@@ -35,6 +35,13 @@ public class Profile implements Serializable {
 	private Set<Role> roles;
 
 	public Profile() {}
+	
+	public Profile(String description, Boolean active, Set<Role> roles) {
+		super();
+		this.description = description;
+		this.active = active;
+		this.roles = roles;
+	}
 
 	public Long getId() {
 		return id;
