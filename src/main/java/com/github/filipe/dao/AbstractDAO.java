@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 public abstract class AbstractDAO<T> implements DAO<T> {
@@ -35,8 +37,19 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 	public List<T> list() {
 		return em.createQuery("select o from " + clazz.getSimpleName() + " o").getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<T> list(String namedQuery) {
+		Query query = em.createNamedQuery(namedQuery);
+		return query.getResultList();
+	}
 
 	public T find(Long id) {
+		
+		/*EntityGraph graph = em.getEntityGraph(entityGraph);		
+		Map hints = new HashMap();
+		hints.put("javax.persistence.fetchgraph", graph);*/
+		
 		return em.find(clazz, id);
 	}
 

@@ -62,19 +62,19 @@ public class UserDAOIT {
 	@Transactional
 	@Test
 	@InSequence(1)
-	public void saveTest() {
+	public void save() {
 		Assert.assertNotNull(dao.save(new User(ATTR_NAME, ATTR_EMAIL, ATTR_PASSWORD, ATTR_REGISTERED, ATTR_ACTIVE, new HashSet<>())));
 	}
 	
 	@Test
 	@InSequence(2)
-	public void listTest() {
-		Assert.assertNotNull(dao.list());
+	public void list() {
+		Assert.assertNotNull(dao.list("user.findAll"));
 	}
 	
 	@Test
 	@InSequence(3)
-	public void findTest() {
+	public void find() {
 		
 		User user = dao.save(new User(ATTR_NAME, ATTR_EMAIL, ATTR_PASSWORD, ATTR_REGISTERED, ATTR_ACTIVE, new HashSet<>()));
 		Assert.assertNotNull(dao.find(user.getId()));

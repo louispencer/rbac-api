@@ -1,10 +1,12 @@
 package com.github.filipe.dao;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface DAO<T> {
 	
-	public List<T> list();
+	public Collection<T> list();
+	
+	public Collection<T> list(String namedQuery);
 	
 	public T find(Long id);
 	

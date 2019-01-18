@@ -13,10 +13,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "users")
+@NamedQuery(name="user.findAll", query="SELECT name, email FROM User")
 public class User implements Serializable {
 
 	private static final long serialVersionUID = -8439381633589353151L;
