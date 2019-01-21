@@ -1,5 +1,7 @@
 package com.github.filipe.resource;
 
+import java.util.Date;
+
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.GET;
@@ -9,8 +11,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 
@@ -25,11 +29,11 @@ public class UserResource {
 	UserDAO dao;
 	
 	@Context 
-	UriInfo uriInfo;
+	UriInfo info;
 	
 	@GET
 	public Response list() {
-		return Response.ok(dao.list("user.findAll")).build();
+		return Response.ok(dao.list()).build();
 	}
 	
 	@POST
@@ -37,8 +41,13 @@ public class UserResource {
 	public Response create(User user) {
 		
 		ResponseBuilder rb = new ResponseBuilderImpl();
-		rb.header("Location", uriInfo.getAbsolutePathBuilder().path( String.valueOf(dao.save(user).getId()) ));
-		return rb.build();
+		UriBuilder uriBuilder = info.getAbsolutePathBuilder();
+		user.setRegisteredIn(new Date());
+		Long id = dao.save(user).getId();		
+		uriBuilder.path(String.valueOf(id));
+		rb.header("Location", uriBuilder.build() );
+		
+		return rb.status(Status.CREATED).build();
 		
 	}
 

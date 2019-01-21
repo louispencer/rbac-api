@@ -8,7 +8,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.time.LocalDate;
+import java.util.Date;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -51,7 +51,7 @@ public class UserResourceIT {
 	private static final String NAME = "Test User";
 	private static final String EMAIL = "user@test.com";
 	private static final String PASSWORD = "123456";
-	private static final LocalDate REGISTERED = LocalDate.now();
+	private static final Date REGISTERED = new Date();
 	private static final Boolean ACTIVE = true;
 	
 	@Deployment
@@ -101,21 +101,20 @@ public class UserResourceIT {
 	}
 	
 	@Test
-	@Ignore
 	@RunAsClient
 	@InSequence(1)
 	public void create() {
-		
+		System.out.println(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, REGISTERED, ACTIVE, null)));
 		String location = given(requestSpecification)
 				.contentType(ContentType.JSON)
 				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, REGISTERED, ACTIVE, null)))
-				.when().post()
+				.when().log().all().post()
 				.then()
 					.assertThat()
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
 				.extract().header("Location");
 		
-		System.out.println(location);
+		System.out.println("Location: " + location);
 		
 	}
 	

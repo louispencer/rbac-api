@@ -1,7 +1,7 @@
 package com.github.filipe.dao;
 
 import java.io.File;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 
 import javax.inject.Inject;
@@ -57,7 +57,7 @@ public class UserDAOIT {
 	private static final String ATTR_EMAIL = "test@test.com";
 	private static final String ATTR_PASSWORD = "password";
 	private static final Boolean ATTR_ACTIVE = true;
-	private static final LocalDate ATTR_REGISTERED = LocalDate.now();
+	private static final Date ATTR_REGISTERED = new Date();
 	
 	@Transactional
 	@Test

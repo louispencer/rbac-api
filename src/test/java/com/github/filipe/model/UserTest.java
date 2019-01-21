@@ -9,6 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -48,7 +49,7 @@ public class UserTest {
 		user.setName("Test User");
 		user.setPassword("password");
 		user.setProfiles(new HashSet<>());
-		user.setRegisteredIn(LocalDate.now());
+		user.setRegisteredIn(new Date());
 		
 		final byte[] serialazed = SerializationUtils.serialize(user);
 		final User deserialized = (User) SerializationUtils.deserialize(serialazed);

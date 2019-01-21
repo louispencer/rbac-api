@@ -1,12 +1,13 @@
 package com.github.filipe.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,10 +16,18 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "users")
-@NamedQuery(name="user.findAll", query="SELECT name, email FROM User")
+@NamedQuery(name="user.findAll", query="SELECT name, email, registeredIn FROM User")
+@JsonInclude(value=Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class User implements Serializable {
 
 	private static final long serialVersionUID = -8439381633589353151L;
@@ -37,18 +46,21 @@ public class User implements Serializable {
 	private String password;
 	
 	@Column
-	private LocalDate registeredIn;
+	@Temporal(TemporalType.DATE)
+	private Date registeredIn;
 	
 	@Column
 	private Boolean active;
 	
-	@ManyToMany
+	@ManyToMany(fetch=FetchType.EAGER)
 	@JoinTable(name="users_profiles", joinColumns=@JoinColumn(name="user"), inverseJoinColumns=@JoinColumn(name="profile"))
 	private Set<Profile> profiles;
 
-	public User() {}
+	public User() {
+		super();
+	}
 
-	public User(String name, String email, String password, LocalDate registeredIn, Boolean active,
+	public User(String name, String email, String password, Date registeredIn, Boolean active,
 			Set<Profile> profiles) {
 		super();
 		this.name = name;
@@ -92,12 +104,12 @@ public class User implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	public LocalDate getRegisteredIn() {
+	
+	public Date getRegisteredIn() {
 		return registeredIn;
 	}
 
-	public void setRegisteredIn(LocalDate registeredIn) {
+	public void setRegisteredIn(Date registeredIn) {
 		this.registeredIn = registeredIn;
 	}
 
