@@ -156,10 +156,10 @@ public class UserResourceIT {
 		given(requestSpecification)
 			.pathParam("id", id)
 			.contentType(ContentType.JSON)
-			.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, !ACTIVE)))
-			.when().put("/{id}")
+			.when().get("/{id}")
 			.then()
-				.assertThat().statusCode(is(Response.Status.OK.getStatusCode()));
+				.assertThat().statusCode(is(Response.Status.OK.getStatusCode()))
+				.assertThat().body(notNullValue());
 		
 	}
 	

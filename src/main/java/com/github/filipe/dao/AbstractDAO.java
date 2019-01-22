@@ -3,8 +3,11 @@ package com.github.filipe.dao;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
@@ -43,7 +46,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 		return em.createQuery("select o from " + clazz.getSimpleName() + " o").getResultList();
 	}
 	
-	public List<T> listWithCriteria(final List<?> fields) {
+	protected List<T> listWithCriteria(final List<?> fields) {
 		
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		builder = em.getCriteriaBuilder();
@@ -70,6 +73,17 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 
 	public T find(Long id) {
 		return em.find(clazz, id);
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected T findWithGraph(Long id, String namedGraph) {
+		
+		EntityGraph<T> eg = (EntityGraph<T>) em.getEntityGraph(namedGraph);    	
+    	
+    	Map<String, Object> properties = new HashMap<>();
+    	properties.put("javax.persistence.fetchgraph", eg);
+    	
+		return em.find(clazz, id, properties);
 	}
 
 	@Transactional

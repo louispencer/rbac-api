@@ -6,7 +6,7 @@ public interface DAO<T> {
 	
 	List<T> list();
 	
-	List<T> listWithCriteria(List<?> fields);
+	// List<T> listWithCriteria(List<?> fields);
 	
 	T find(Long id);
 	

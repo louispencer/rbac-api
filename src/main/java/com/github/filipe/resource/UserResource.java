@@ -1,6 +1,5 @@
 package com.github.filipe.resource;
 
-import java.util.Arrays;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -37,7 +36,13 @@ public class UserResource {
 	
 	@GET
 	public Response list() {
-		return Response.ok(dao.listWithCriteria(Arrays.asList("name","email","registeredIn","active"))).build();
+		return Response.ok(dao.list()).build();
+	}
+	
+	@GET
+	@Path("/{id}")
+	public Response get(@PathParam("id") Long id) {
+		return Response.ok(dao.find(id)).build();
 	}
 	
 	@POST

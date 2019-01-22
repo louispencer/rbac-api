@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "users")
+@NamedEntityGraph(name="user.graph",attributeNodes=@NamedAttributeNode("profiles"))
 @JsonInclude(value=Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class User implements Serializable {
@@ -65,8 +68,9 @@ public class User implements Serializable {
 		this.active = active;
 	}
 	
-	public User(String name, String email, Date registeredIn, Boolean active) {
+	public User(Long id, String name, String email, Date registeredIn, Boolean active) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.email = email;
 		this.registeredIn = registeredIn;
