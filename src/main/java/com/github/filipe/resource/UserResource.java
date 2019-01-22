@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -61,6 +62,16 @@ public class UserResource {
 	public Response update(@PathParam("id") Long id, User user) {
 		user.setId(id);
 		return Response.ok(dao.save(user)).build();
+	}
+	
+	@DELETE
+	@Path("/{id}")
+	@Transactional
+	public Response remove(@PathParam("id") Long id) {
+		ResponseBuilder rb = new ResponseBuilderImpl();
+		rb.status(Status.NO_CONTENT);
+		dao.remove(id);
+		return rb.build();
 	}
 
 }

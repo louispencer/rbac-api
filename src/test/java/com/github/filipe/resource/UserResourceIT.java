@@ -73,7 +73,7 @@ public class UserResourceIT {
 	}
 	
 	@Before
-	public void load() throws URISyntaxException {
+	public void setup() throws URISyntaxException {
 		
 		final RequestSpecBuilder request = new RequestSpecBuilder();
         request.setBaseUri(url.toURI())
@@ -134,6 +134,56 @@ public class UserResourceIT {
 				.get()
 			.then()
 				.assertThat().statusCode(anyOf(is(Response.Status.OK.getStatusCode()), is(Response.Status.PARTIAL_CONTENT.getStatusCode())));
+		
+	}
+	
+	@Test
+	@RunAsClient
+	@InSequence(4)
+	public void get() {
+		
+		String location = given(requestSpecification)
+				.contentType(ContentType.JSON)
+				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
+				.when().post()
+				.then()
+					.assertThat()
+					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
+				.extract().header("Location");
+		
+		String id = location.split("users/")[1];
+		
+		given(requestSpecification)
+			.pathParam("id", id)
+			.contentType(ContentType.JSON)
+			.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, !ACTIVE)))
+			.when().put("/{id}")
+			.then()
+				.assertThat().statusCode(is(Response.Status.OK.getStatusCode()));
+		
+	}
+	
+	@Test
+	@RunAsClient
+	@InSequence(5)
+	public void remove() {
+		
+		String location = given(requestSpecification)
+				.contentType(ContentType.JSON)
+				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
+				.when().post()
+				.then()
+					.assertThat()
+					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
+				.extract().header("Location");
+		
+		String id = location.split("users/")[1];
+		
+		given(requestSpecification)
+			.pathParam("id", id)
+			.when().delete("/{id}")
+			.then()
+				.assertThat().statusCode(is(Response.Status.NO_CONTENT.getStatusCode()));
 		
 	}
 
