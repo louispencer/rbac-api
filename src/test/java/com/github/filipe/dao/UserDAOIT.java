@@ -1,8 +1,6 @@
 package com.github.filipe.dao;
 
 import java.io.File;
-import java.util.Date;
-import java.util.HashSet;
 
 import javax.inject.Inject;
 
@@ -57,26 +55,25 @@ public class UserDAOIT {
 	private static final String ATTR_EMAIL = "test@test.com";
 	private static final String ATTR_PASSWORD = "password";
 	private static final Boolean ATTR_ACTIVE = true;
-	private static final Date ATTR_REGISTERED = new Date();
 	
 	@Transactional
 	@Test
 	@InSequence(1)
 	public void save() {
-		Assert.assertNotNull(dao.save(new User(ATTR_NAME, ATTR_EMAIL, ATTR_PASSWORD, ATTR_REGISTERED, ATTR_ACTIVE, new HashSet<>())));
+		Assert.assertNotNull(dao.save(new User(ATTR_NAME, ATTR_EMAIL, ATTR_PASSWORD, ATTR_ACTIVE)));
 	}
 	
 	@Test
 	@InSequence(2)
 	public void list() {
-		Assert.assertNotNull(dao.list("user.findAll"));
+		Assert.assertNotNull(dao.list());
 	}
 	
 	@Test
 	@InSequence(3)
 	public void find() {
 		
-		User user = dao.save(new User(ATTR_NAME, ATTR_EMAIL, ATTR_PASSWORD, ATTR_REGISTERED, ATTR_ACTIVE, new HashSet<>()));
+		User user = dao.save(new User(ATTR_NAME, ATTR_EMAIL, ATTR_PASSWORD, ATTR_ACTIVE));
 		Assert.assertNotNull(dao.find(user.getId()));
 	}
 

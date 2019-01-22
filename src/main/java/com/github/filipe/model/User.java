@@ -7,14 +7,12 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "users")
-@NamedQuery(name="user.findAll", query="SELECT name, email, registeredIn FROM User")
 @JsonInclude(value=Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class User implements Serializable {
@@ -45,14 +42,14 @@ public class User implements Serializable {
 	@Column
 	private String password;
 	
-	@Column
+	@Column(updatable=false)
 	@Temporal(TemporalType.DATE)
 	private Date registeredIn;
 	
 	@Column
 	private Boolean active;
 	
-	@ManyToMany(fetch=FetchType.EAGER)
+	@ManyToMany
 	@JoinTable(name="users_profiles", joinColumns=@JoinColumn(name="user"), inverseJoinColumns=@JoinColumn(name="profile"))
 	private Set<Profile> profiles;
 
@@ -60,18 +57,28 @@ public class User implements Serializable {
 		super();
 	}
 
-	public User(String name, String email, String password, Date registeredIn, Boolean active,
-			Set<Profile> profiles) {
+	public User(String name, String email, String password, Boolean active) {
 		super();
 		this.name = name;
 		this.email = email;
 		this.password = password;
+		this.active = active;
+	}
+	
+	public User(String name, String email, Date registeredIn, Boolean active) {
+		super();
+		this.name = name;
+		this.email = email;
 		this.registeredIn = registeredIn;
 		this.active = active;
-		this.profiles = profiles;
 	}
-
-
+	
+	public User(String name, String email, Boolean active) {
+		super();
+		this.name = name;
+		this.email = email;
+		this.active = active;
+	}
 
 	public Long getId() {
 		return id;

@@ -2,12 +2,18 @@ package com.github.filipe.dao;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.transaction.Transactional;
 
 public abstract class AbstractDAO<T> implements DAO<T> {
@@ -37,10 +43,29 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 		return em.createQuery("select o from " + clazz.getSimpleName() + " o").getResultList();
 	}
 	
-	@SuppressWarnings("unchecked")
-	public List<T> list(String namedQuery) {
-		Query query = em.createNamedQuery(namedQuery);
-		return query.getResultList();
+	public List<T> listWithCriteria(final List<?> fields) {
+		
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		builder = em.getCriteriaBuilder();
+	    CriteriaQuery<T> query = builder.createQuery(clazz);
+        Root<T> root = (Root<T>) query.from(clazz).alias(clazz.getSimpleName().toLowerCase());
+        
+        if ( !fields.isEmpty() ) {
+			
+			List<Expression<?>> fieldsList = new ArrayList<Expression<?>>();
+			
+			fields.forEach(f -> fieldsList.add(root.get(f.toString())));
+			
+			final List<Selection<?>> selectionList = new ArrayList<>();
+			selectionList.addAll(fieldsList);
+			
+			query.multiselect(selectionList);
+			
+		}
+        
+        TypedQuery<T> typedQuery = em.createQuery(query);
+		
+		return typedQuery.getResultList();
 	}
 
 	public T find(Long id) {

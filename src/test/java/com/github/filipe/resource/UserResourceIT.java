@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Date;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -26,7 +25,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.ScopeType;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -51,7 +49,6 @@ public class UserResourceIT {
 	private static final String NAME = "Test User";
 	private static final String EMAIL = "user@test.com";
 	private static final String PASSWORD = "123456";
-	private static final Date REGISTERED = new Date();
 	private static final Boolean ACTIVE = true;
 	
 	@Deployment
@@ -89,7 +86,47 @@ public class UserResourceIT {
 	
 	@Test
 	@RunAsClient
+	@InSequence(1)
+	public void create() {
+		given(requestSpecification)
+				.contentType(ContentType.JSON)
+				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
+				.when().log().all().post()
+				.then()
+					.assertThat()
+					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()));
+		
+	}
+	
+	@Test
+	@RunAsClient
 	@InSequence(2)
+	public void update() {
+		
+		String location = given(requestSpecification)
+				.contentType(ContentType.JSON)
+				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
+				.when().post()
+				.then()
+					.assertThat()
+					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
+				.extract().header("Location");
+		
+		String id = location.split("users/")[1];
+		
+		given(requestSpecification)
+			.pathParam("id", id)
+			.contentType(ContentType.JSON)
+			.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, !ACTIVE)))
+			.when().put("/{id}")
+			.then()
+				.assertThat().statusCode(is(Response.Status.OK.getStatusCode()));
+		
+	}
+	
+	@Test
+	@RunAsClient
+	@InSequence(3)
 	public void list() {
 		
 		given(requestSpecification)
@@ -97,40 +134,6 @@ public class UserResourceIT {
 				.get()
 			.then()
 				.assertThat().statusCode(anyOf(is(Response.Status.OK.getStatusCode()), is(Response.Status.PARTIAL_CONTENT.getStatusCode())));
-		
-	}
-	
-	@Test
-	@RunAsClient
-	@InSequence(1)
-	public void create() {
-		System.out.println(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, REGISTERED, ACTIVE, null)));
-		String location = given(requestSpecification)
-				.contentType(ContentType.JSON)
-				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, REGISTERED, ACTIVE, null)))
-				.when().log().all().post()
-				.then()
-					.assertThat()
-					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
-				.extract().header("Location");
-		
-		System.out.println("Location: " + location);
-		
-	}
-	
-	@Ignore
-	public void update() {
-		
-		String location = given(requestSpecification)
-				.contentType(ContentType.JSON)
-				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, REGISTERED, ACTIVE, null)))
-				.when().post()
-				.then()
-					.assertThat()
-					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
-				.extract().header("Location");
-		
-		System.out.println(location);
 		
 	}
 
