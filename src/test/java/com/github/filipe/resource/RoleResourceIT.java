@@ -40,7 +40,7 @@ import io.restassured.specification.RequestSpecification;
 		@Property(name="javaVmArguments", value="-Xms64m -Xmx512m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djboss.socket.binding.port-offset=2"),
 		@Property(name="managementPort", value="9992")
 		})
-public class UserResourceIT {
+public class RoleResourceIT {
 	
 	@ArquillianResource
 	private URL url;
@@ -90,7 +90,7 @@ public class UserResourceIT {
 	public void create() {
 		given(requestSpecification)
 				.contentType(ContentType.JSON)
-				.body(loadBody())
+				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
 				.when().log().all().post()
 				.then()
 					.assertThat()
@@ -105,7 +105,7 @@ public class UserResourceIT {
 		
 		String location = given(requestSpecification)
 				.contentType(ContentType.JSON)
-				.body(loadBody())
+				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
 				.when().post()
 				.then()
 					.assertThat()
@@ -144,7 +144,7 @@ public class UserResourceIT {
 		
 		String location = given(requestSpecification)
 				.contentType(ContentType.JSON)
-				.body(loadBody())
+				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
 				.when().post()
 				.then()
 					.assertThat()
@@ -170,7 +170,7 @@ public class UserResourceIT {
 		
 		String location = given(requestSpecification)
 				.contentType(ContentType.JSON)
-				.body(loadBody())
+				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
 				.when().post()
 				.then()
 					.assertThat()
@@ -186,9 +186,7 @@ public class UserResourceIT {
 				.assertThat().statusCode(is(Response.Status.NO_CONTENT.getStatusCode()));
 		
 	}
-	
-	private static String loadBody() {
-		return new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE));
-	}
+
+
 
 }
