@@ -10,10 +10,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "roles")
+@NamedEntityGraph(name="role.graph",attributeNodes=@NamedAttributeNode("profiles"))
+@JsonInclude(value=Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Role implements Serializable {
 
 	private static final long serialVersionUID = -4426951619843181851L;
@@ -32,6 +41,19 @@ public class Role implements Serializable {
 	private Set<Profile> profiles;
 
 	public Role() {
+	}
+	
+	public Role(Long id, String description, Boolean active) {
+		super();
+		this.id = id;
+		this.description = description;
+		this.active = active;
+	}
+	
+	public Role(String description, Boolean active) {
+		super();
+		this.description = description;
+		this.active = active;
 	}
 
 	public Role(String description, Boolean active, Set<Profile> profiles) {

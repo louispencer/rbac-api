@@ -37,10 +37,10 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 
 @RunWith(ArquillianChameleon.class)
-@ChameleonTarget(value="wildfly:11.0.0.Final:managed", customProperties= {
+@ChameleonTarget(value="wildfly:11.0.0.Final:managed"/*, customProperties= {
 		@Property(name="javaVmArguments", value="-Xms64m -Xmx512m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djboss.socket.binding.port-offset=2"),
 		@Property(name="managementPort", value="9992")
-		})
+		}*/)
 public class ProfileResourceIT {
 	
 	@ArquillianResource
@@ -111,7 +111,7 @@ public class ProfileResourceIT {
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
 				.extract().header("Location");
 		
-		String id = location.split("users/")[1];
+		String id = location.split("profiles/")[1];
 		
 		given(requestSpecification)
 			.pathParam("id", id)
@@ -150,7 +150,7 @@ public class ProfileResourceIT {
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
 				.extract().header("Location");
 		
-		String id = location.split("users/")[1];
+		String id = location.split("profiles/")[1];
 		
 		given(requestSpecification)
 			.pathParam("id", id)
@@ -176,7 +176,7 @@ public class ProfileResourceIT {
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
 				.extract().header("Location");
 		
-		String id = location.split("users/")[1];
+		String id = location.split("profiles/")[1];
 		
 		given(requestSpecification)
 			.pathParam("id", id)
@@ -188,7 +188,7 @@ public class ProfileResourceIT {
 
 
 	private static String loadBody() {
-		return new GsonBuilder().create().toJson(new Profile(DESCRIPTION, ACTIVE, new HashSet<>()));
+		return new GsonBuilder().create().toJson(new Profile(DESCRIPTION, ACTIVE));
 	}
 
 

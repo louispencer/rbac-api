@@ -8,12 +8,12 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashSet;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.arquillian.container.chameleon.api.ChameleonTarget;
-import org.arquillian.container.chameleon.api.Property;
 import org.arquillian.container.chameleon.runner.ArquillianChameleon;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.github.filipe.model.User;
+import com.github.filipe.model.Role;
 import com.google.gson.GsonBuilder;
 
 import io.restassured.builder.RequestSpecBuilder;
@@ -36,19 +36,17 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 
 @RunWith(ArquillianChameleon.class)
-@ChameleonTarget(value="wildfly:11.0.0.Final:managed", customProperties= {
+@ChameleonTarget(value="wildfly:11.0.0.Final:managed"/*, customProperties= {
 		@Property(name="javaVmArguments", value="-Xms64m -Xmx512m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djboss.socket.binding.port-offset=2"),
 		@Property(name="managementPort", value="9992")
-		})
+		}*/)
 public class RoleResourceIT {
 	
 	@ArquillianResource
 	private URL url;
 	private RequestSpecification requestSpecification;
 	
-	private static final String NAME = "Test User";
-	private static final String EMAIL = "user@test.com";
-	private static final String PASSWORD = "123456";
+	private static final String DESCRIPTION = "Test Profile";
 	private static final Boolean ACTIVE = true;
 	
 	@Deployment
@@ -77,7 +75,7 @@ public class RoleResourceIT {
 		
 		final RequestSpecBuilder request = new RequestSpecBuilder();
         request.setBaseUri(url.toURI())
-        		.setBasePath("users")
+        		.setBasePath("roles")
         		.setAccept(MediaType.APPLICATION_JSON);
         
         this.requestSpecification = request.build();
@@ -90,7 +88,7 @@ public class RoleResourceIT {
 	public void create() {
 		given(requestSpecification)
 				.contentType(ContentType.JSON)
-				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
+				.body(loadBody())
 				.when().log().all().post()
 				.then()
 					.assertThat()
@@ -105,19 +103,19 @@ public class RoleResourceIT {
 		
 		String location = given(requestSpecification)
 				.contentType(ContentType.JSON)
-				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
+				.body(loadBody())
 				.when().post()
 				.then()
 					.assertThat()
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
 				.extract().header("Location");
 		
-		String id = location.split("users/")[1];
+		String id = location.split("roles/")[1];
 		
 		given(requestSpecification)
 			.pathParam("id", id)
 			.contentType(ContentType.JSON)
-			.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, !ACTIVE)))
+			.body(loadBody())
 			.when().put("/{id}")
 			.then()
 				.assertThat().statusCode(is(Response.Status.OK.getStatusCode()));
@@ -144,14 +142,14 @@ public class RoleResourceIT {
 		
 		String location = given(requestSpecification)
 				.contentType(ContentType.JSON)
-				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
+				.body(loadBody())
 				.when().post()
 				.then()
 					.assertThat()
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
 				.extract().header("Location");
 		
-		String id = location.split("users/")[1];
+		String id = location.split("roles/")[1];
 		
 		given(requestSpecification)
 			.pathParam("id", id)
@@ -170,14 +168,14 @@ public class RoleResourceIT {
 		
 		String location = given(requestSpecification)
 				.contentType(ContentType.JSON)
-				.body(new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE)))
+				.body(loadBody())
 				.when().post()
 				.then()
 					.assertThat()
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
 				.extract().header("Location");
 		
-		String id = location.split("users/")[1];
+		String id = location.split("roles/")[1];
 		
 		given(requestSpecification)
 			.pathParam("id", id)
@@ -187,6 +185,10 @@ public class RoleResourceIT {
 		
 	}
 
+
+	private static String loadBody() {
+		return new GsonBuilder().create().toJson(new Role(DESCRIPTION, ACTIVE));
+	}
 
 
 }
