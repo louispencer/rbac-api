@@ -1,4 +1,4 @@
-package com.github.filipe.model;
+package com.github.rbac.model;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEqualsFor;
@@ -13,34 +13,34 @@ import java.util.HashSet;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Test;
 
-public class ProfileTest {
+import com.github.rbac.model.Role;
+
+public class RoleTest {
 	
-	private Profile profile;
+	private Role role;
 	
 	@Test
 	public void serializeTest() {
 		
-		profile = new Profile();
-		profile.setId(System.currentTimeMillis());
-		profile.setActive(true);
-		profile.setDescription("TEST");
-		profile.setRoles(new HashSet<>());
+		role = new Role();
+		role.setId(System.currentTimeMillis());
+		role.setActive(true);
+		role.setDescription("ROLE_TEST");
+		role.setProfiles(new HashSet<>());
 		
-		final byte[] serialazed = SerializationUtils.serialize(profile);
-		final Profile deserialized = (Profile) SerializationUtils.deserialize(serialazed);
+		final byte[] serialazed = SerializationUtils.serialize(role);
+		final Role deserialized = (Role) SerializationUtils.deserialize(serialazed);
 		
-		assertEquals(profile, deserialized);
+		assertEquals(role, deserialized);
 	}
 	
 	@Test
 	public void vehicleTest() {
-		assertThat(Profile.class, allOf(
+		assertThat(Role.class, allOf(
                 hasValidBeanConstructor(),
                 hasValidGettersAndSetters(),
                 hasValidBeanHashCodeFor("id"),
                 hasValidBeanEqualsFor("id")
         ));
 	}
-
-
 }

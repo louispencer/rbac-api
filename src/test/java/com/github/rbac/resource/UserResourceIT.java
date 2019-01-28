@@ -1,4 +1,4 @@
-package com.github.filipe.resource;
+package com.github.rbac.resource;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.anyOf;
@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashSet;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.github.filipe.model.Profile;
+import com.github.rbac.model.User;
 import com.google.gson.GsonBuilder;
 
 import io.restassured.builder.RequestSpecBuilder;
@@ -41,13 +40,15 @@ import io.restassured.specification.RequestSpecification;
 		@Property(name="javaVmArguments", value="-Xms64m -Xmx512m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djboss.socket.binding.port-offset=2"),
 		@Property(name="managementPort", value="9992")
 		}*/)
-public class ProfileResourceIT {
+public class UserResourceIT {
 	
 	@ArquillianResource
 	private URL url;
 	private RequestSpecification requestSpecification;
 	
-	private static final String DESCRIPTION = "Test Profile";
+	private static final String NAME = "Test User";
+	private static final String EMAIL = "user@test.com";
+	private static final String PASSWORD = "123456";
 	private static final Boolean ACTIVE = true;
 	
 	@Deployment
@@ -62,7 +63,7 @@ public class ProfileResourceIT {
 				.asFile();
 		
 		WebArchive war = ShrinkWrap.create(WebArchive.class, "rbac-api.war")
-		        .addPackages(true, "com.github.filipe")
+		        .addPackages(true, User.class.getPackage().getName())
 		        .addAsResource("META-INF/persistence.xml")
 		        .addAsLibraries(archives)
 		        .addAsWebInfResource( new StringAsset("<beans bean-discovery-mode=\"all\" version=\"1.1\"/>"), "beans.xml")
@@ -76,7 +77,7 @@ public class ProfileResourceIT {
 		
 		final RequestSpecBuilder request = new RequestSpecBuilder();
         request.setBaseUri(url.toURI())
-        		.setBasePath("profiles")
+        		.setBasePath("users")
         		.setAccept(MediaType.APPLICATION_JSON);
         
         this.requestSpecification = request.build();
@@ -111,12 +112,12 @@ public class ProfileResourceIT {
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
 				.extract().header("Location");
 		
-		String id = location.split("profiles/")[1];
+		String id = location.split("users/")[1];
 		
 		given(requestSpecification)
 			.pathParam("id", id)
 			.contentType(ContentType.JSON)
-			.body(loadBody())
+			.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, !ACTIVE)))
 			.when().put("/{id}")
 			.then()
 				.assertThat().statusCode(is(Response.Status.OK.getStatusCode()));
@@ -150,7 +151,7 @@ public class ProfileResourceIT {
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
 				.extract().header("Location");
 		
-		String id = location.split("profiles/")[1];
+		String id = location.split("users/")[1];
 		
 		given(requestSpecification)
 			.pathParam("id", id)
@@ -176,7 +177,7 @@ public class ProfileResourceIT {
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
 				.extract().header("Location");
 		
-		String id = location.split("profiles/")[1];
+		String id = location.split("users/")[1];
 		
 		given(requestSpecification)
 			.pathParam("id", id)
@@ -185,11 +186,9 @@ public class ProfileResourceIT {
 				.assertThat().statusCode(is(Response.Status.NO_CONTENT.getStatusCode()));
 		
 	}
-
-
+	
 	private static String loadBody() {
-		return new GsonBuilder().create().toJson(new Profile(DESCRIPTION, ACTIVE));
+		return new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE));
 	}
-
 
 }

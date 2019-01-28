@@ -1,4 +1,4 @@
-package com.github.filipe.model;
+package com.github.rbac.model;
 
 import java.io.Serializable;
 import java.util.Date;

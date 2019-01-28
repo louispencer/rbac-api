@@ -1,9 +1,9 @@
-package com.github.filipe.dao;
+package com.github.rbac.dao;
 
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.filipe.model.User;
+import com.github.rbac.model.User;
 
 public class UserDAO extends AbstractDAO<User> implements DAO<User> {
 	

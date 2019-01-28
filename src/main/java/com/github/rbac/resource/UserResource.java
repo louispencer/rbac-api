@@ -1,4 +1,4 @@
-package com.github.filipe.resource;
+package com.github.rbac.resource;
 
 import java.util.Date;
 
@@ -21,8 +21,8 @@ import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 
-import com.github.filipe.dao.UserDAO;
-import com.github.filipe.model.User;
+import com.github.rbac.dao.UserDAO;
+import com.github.rbac.model.User;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)

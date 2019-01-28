@@ -1,4 +1,4 @@
-package com.github.filipe.resource;
+package com.github.rbac.resource;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -19,15 +19,15 @@ import javax.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 
-import com.github.filipe.dao.RoleDAO;
-import com.github.filipe.model.Role;
+import com.github.rbac.dao.ProfileDAO;
+import com.github.rbac.model.Profile;
 
-@Path("/roles")
+@Path("/profiles")
 @Produces(MediaType.APPLICATION_JSON)
-public class RoleResource {
-		
+public class ProfileResource {
+	
 	@Inject
-	RoleDAO dao;
+	ProfileDAO dao;
 	
 	@Context 
 	UriInfo info;
@@ -45,12 +45,12 @@ public class RoleResource {
 	
 	@POST
 	@Transactional
-	public Response create(Role role) {
+	public Response create(Profile profile) {
 		
 		ResponseBuilder rb = new ResponseBuilderImpl();
 		UriBuilder uriBuilder = info.getAbsolutePathBuilder();
-		role.setActive(true);
-		Long id = dao.save(role).getId();		
+		profile.setActive(true);
+		Long id = dao.save(profile).getId();		
 		uriBuilder.path(String.valueOf(id));
 		rb.header("Location", uriBuilder.build() );
 		
@@ -61,9 +61,9 @@ public class RoleResource {
 	@PUT
 	@Path("/{id}")
 	@Transactional
-	public Response update(@PathParam("id") Long id, Role role) {
-		role.setId(id);
-		return Response.ok(dao.save(role)).build();
+	public Response update(@PathParam("id") Long id, Profile profile) {
+		profile.setId(id);
+		return Response.ok(dao.save(profile)).build();
 	}
 	
 	@DELETE

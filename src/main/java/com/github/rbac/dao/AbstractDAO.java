@@ -1,4 +1,4 @@
-package com.github.filipe.dao;
+package com.github.rbac.dao;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

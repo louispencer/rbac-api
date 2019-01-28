@@ -1,4 +1,4 @@
-package com.github.filipe.model;
+package com.github.rbac.model;
 
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanConstructor;
 import static com.google.code.beanmatchers.BeanMatchers.hasValidBeanEqualsFor;
@@ -17,6 +17,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.github.rbac.model.User;
 import com.google.code.beanmatchers.BeanMatchers;
 import com.google.code.beanmatchers.ValueGenerator;
 

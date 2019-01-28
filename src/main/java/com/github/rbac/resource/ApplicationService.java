@@ -1,4 +1,4 @@
-package com.github.filipe.resource;
+package com.github.rbac.resource;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

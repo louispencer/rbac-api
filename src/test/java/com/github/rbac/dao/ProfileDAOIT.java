@@ -1,4 +1,4 @@
-package com.github.filipe.dao;
+package com.github.rbac.dao;
 
 import java.io.File;
 import java.util.HashSet;
@@ -20,7 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.github.filipe.model.Profile;
+import com.github.rbac.model.Profile;
 
 @RunWith(ArquillianChameleon.class)
 @ChameleonTarget(value="wildfly:11.0.0.Final:managed", customProperties= {
@@ -41,7 +41,7 @@ public class ProfileDAOIT {
 				.asFile();
 		
 		WebArchive war = ShrinkWrap.create(WebArchive.class, "rbac-api.war")
-		        .addPackages(true, "com.github.filipe")
+		        .addPackages(true, Profile.class.getPackage().getName())
 		        .addAsResource("META-INF/persistence.xml")
 		        .addAsLibraries(archives)
 		        .addAsWebInfResource( new StringAsset("<beans bean-discovery-mode=\"all\" version=\"1.1\"/>"), "beans.xml");

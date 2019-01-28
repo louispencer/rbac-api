@@ -1,9 +1,9 @@
-package com.github.filipe.dao;
+package com.github.rbac.dao;
 
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.filipe.model.Role;
+import com.github.rbac.model.Role;
 
 public class RoleDAO extends AbstractDAO<Role> implements DAO<Role> {
 	
