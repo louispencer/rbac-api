@@ -41,7 +41,7 @@ public class UserDAOIT {
 				.asFile();
 		
 		WebArchive war = ShrinkWrap.create(WebArchive.class, "rbac-api.war")
-		        .addPackages(true, User.class.getPackage().getName())
+		        .addPackages(true, "com.github.rbac")
 		        .addAsResource("META-INF/persistence.xml")
 		        .addAsLibraries(archives)
 		        .addAsWebInfResource( new StringAsset("<beans bean-discovery-mode=\"all\" version=\"1.1\"/>"), "beans.xml");
