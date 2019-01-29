@@ -128,6 +128,13 @@
 		    <version>1.0.5</version>
 		    <scope>test</scope>
 		</dependency>
+		
+		<!-- Swagger -->
+		<dependency>
+		  <groupId>io.swagger</groupId>
+		  <artifactId>swagger-jaxrs</artifactId>
+		  <version>1.5.0</version>
+		</dependency>
 	</dependencies>
 	
 	<build>

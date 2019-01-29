@@ -22,8 +22,11 @@ import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import com.github.rbac.dao.RoleDAO;
 import com.github.rbac.model.Role;
 
+import io.swagger.annotations.Api;
+
 @Path("/roles")
 @Produces(MediaType.APPLICATION_JSON)
+@Api
 public class RoleResource {
 		
 	@Inject

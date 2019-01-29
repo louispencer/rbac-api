@@ -24,8 +24,11 @@ import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import com.github.rbac.dao.UserDAO;
 import com.github.rbac.model.User;
 
+import io.swagger.annotations.Api;
+
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
+@Api
 public class UserResource {
 	
 	@Inject

@@ -22,8 +22,11 @@ import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import com.github.rbac.dao.ProfileDAO;
 import com.github.rbac.model.Profile;
 
+import io.swagger.annotations.Api;
+
 @Path("/profiles")
 @Produces(MediaType.APPLICATION_JSON)
+@Api
 public class ProfileResource {
 	
 	@Inject
