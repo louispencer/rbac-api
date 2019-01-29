@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.arquillian.container.chameleon.api.ChameleonTarget;
+import org.arquillian.container.chameleon.api.Property;
 import org.arquillian.container.chameleon.runner.ArquillianChameleon;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -28,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.github.rbac.model.Profile;
-import com.github.rbac.model.User;
 import com.google.gson.GsonBuilder;
 
 import io.restassured.builder.RequestSpecBuilder;
@@ -36,10 +36,10 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 
 @RunWith(ArquillianChameleon.class)
-@ChameleonTarget(value="wildfly:11.0.0.Final:managed"/*, customProperties= {
+@ChameleonTarget(value="wildfly:11.0.0.Final:managed", customProperties= {
 		@Property(name="javaVmArguments", value="-Xms64m -Xmx512m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djboss.socket.binding.port-offset=2"),
 		@Property(name="managementPort", value="9992")
-		}*/)
+		})
 public class ProfileResourceIT {
 	
 	@ArquillianResource

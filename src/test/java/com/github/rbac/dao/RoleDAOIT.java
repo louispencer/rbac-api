@@ -20,9 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.github.rbac.dao.RoleDAO;
 import com.github.rbac.model.Role;
-import com.github.rbac.model.User;
 
 @RunWith(ArquillianChameleon.class)
 @ChameleonTarget(value="wildfly:11.0.0.Final:managed", customProperties= {
