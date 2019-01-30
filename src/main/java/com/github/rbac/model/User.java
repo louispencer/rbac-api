@@ -55,7 +55,7 @@ public class User implements Serializable {
 	@ManyToMany
 	@JoinTable(name="users_profiles", joinColumns=@JoinColumn(name="user"), inverseJoinColumns=@JoinColumn(name="profile"))
 	private Set<Profile> profiles;
-
+	
 	public User() {
 		super();
 	}

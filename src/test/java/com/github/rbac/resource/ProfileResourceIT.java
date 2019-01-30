@@ -184,6 +184,23 @@ public class ProfileResourceIT {
 				.assertThat().statusCode(is(Response.Status.NO_CONTENT.getStatusCode()));
 		
 	}
+	
+	@Test
+	@RunAsClient
+	@InSequence(6)
+	public void notFound() {
+		
+		String id = String.valueOf(System.currentTimeMillis());
+		
+		given(requestSpecification)
+			.pathParam("id", id)
+			.contentType(ContentType.JSON)
+			.when().get("/{id}")
+			.then()
+				.assertThat().statusCode(is(Response.Status.NOT_FOUND.getStatusCode()))
+				.assertThat().body(notNullValue());
+		
+	}
 
 
 	private static String loadBody() {

@@ -3,6 +3,8 @@ package com.github.rbac.dao;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.ws.rs.NotFoundException;
+
 import com.github.rbac.model.Profile;
 
 public class ProfileDAO extends AbstractDAO<Profile> implements DAO<Profile> {
@@ -14,7 +16,13 @@ public class ProfileDAO extends AbstractDAO<Profile> implements DAO<Profile> {
 	
 	@Override
 	public Profile find(Long id) {
-		return findWithGraph(id, "profile.graph");
+		
+		Profile profile = findWithGraph(id, "profile.graph");
+		if (profile==null) {
+			throw new NotFoundException();
+		}
+		
+		return profile;
 	}
 
 }
