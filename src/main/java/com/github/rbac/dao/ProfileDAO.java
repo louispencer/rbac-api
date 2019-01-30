@@ -17,7 +17,7 @@ public class ProfileDAO extends AbstractDAO<Profile> {
 	public List<Profile> filter(final Long user) {
 		List<Predicate> restrictions = new ArrayList<Predicate>();
 		if (user!=null && user>0L) {
-			restrictions.add(builder.and(root.get("users").in(user)));
+			restrictions.add(root.join("users").in(user));
 		}
 		return listWithCriteria(fields, restrictions);
 	}
