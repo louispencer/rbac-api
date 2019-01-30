@@ -68,6 +68,23 @@ public class User implements Serializable {
 		this.active = active;
 	}
 	
+	public User(String name, String email, String password, Boolean active, Set<Profile> profiles) {
+		super();
+		this.name = name;
+		this.email = email;
+		this.password = password;
+		this.active = active;
+		this.profiles = profiles;
+	}
+	
+	public User(String name, String email, Boolean active, Set<Profile> profiles) {
+		super();
+		this.name = name;
+		this.email = email;
+		this.active = active;
+		this.profiles = profiles;
+	}
+	
 	public User(Long id, String name, String email, Date registeredIn, Boolean active) {
 		super();
 		this.id = id;

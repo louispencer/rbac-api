@@ -8,12 +8,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashSet;
-
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Test;
-
-import com.github.rbac.model.Role;
 
 public class RoleTest {
 	
@@ -26,7 +22,6 @@ public class RoleTest {
 		role.setId(System.currentTimeMillis());
 		role.setActive(true);
 		role.setDescription("ROLE_TEST");
-		role.setProfiles(new HashSet<>());
 		
 		final byte[] serialazed = SerializationUtils.serialize(role);
 		final Role deserialized = (Role) SerializationUtils.deserialize(serialazed);

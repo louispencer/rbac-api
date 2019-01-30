@@ -8,6 +8,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -28,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.github.rbac.model.Profile;
 import com.github.rbac.model.User;
 import com.google.gson.GsonBuilder;
 
@@ -201,6 +204,71 @@ public class UserResourceIT {
 			.then()
 				.assertThat().statusCode(is(Response.Status.NOT_FOUND.getStatusCode()))
 				.assertThat().body(notNullValue());
+		
+	}
+	
+	@Test
+	@RunAsClient
+	@InSequence(7)
+	public void bindProfile() throws URISyntaxException {
+		
+		// Create a Profile
+		
+		RequestSpecBuilder builder = new RequestSpecBuilder();
+		builder.setBaseUri(url.toURI())
+			.setBasePath("profiles")
+			.setAccept(MediaType.APPLICATION_JSON);
+		
+		String profileLocation = given(builder.build())
+			.contentType(ContentType.JSON)
+			.body(new GsonBuilder().create().toJson(new Profile("USER", ACTIVE)))
+			.when().log().all().post()
+			.then()
+			.assertThat()
+			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))	
+			.extract().header("Location");
+		
+		String id = profileLocation.split("profiles/")[1];
+		Profile profile = new Profile();
+		profile.setId(Long.valueOf(id));
+		
+		Set<Profile> profiles = new HashSet<>();
+		profiles.add(profile);
+		
+		// Create User
+		
+		String userLocation = given(requestSpecification)
+				.contentType(ContentType.JSON)
+				.body(loadBody())
+				.when().post()
+				.then()
+					.assertThat()
+					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
+				.extract().header("Location");
+		
+		String userID = userLocation.split("users/")[1];
+		
+		// Bind Profile to User
+		
+		given(requestSpecification)
+			.pathParam("id", userID)
+			.contentType(ContentType.JSON)
+			.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, ACTIVE, profiles)))
+			.when().put("/{id}")
+			.then()
+				.assertThat().statusCode(is(Response.Status.OK.getStatusCode()));
+		
+		// Create User with Profile
+		
+		given(requestSpecification)
+		.contentType(ContentType.JSON)
+		.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, ACTIVE, profiles)))
+		.when().post()
+		.then()
+			.assertThat()
+			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
+		.extract().header("Location");
+		
 		
 	}
 	
