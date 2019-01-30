@@ -42,6 +42,9 @@ public class Profile implements Serializable {
 	@ManyToMany
 	@JoinTable(name="profiles_roles", joinColumns=@JoinColumn(name="profile"), inverseJoinColumns=@JoinColumn(name="role"))
 	private Set<Role> roles;
+	
+	@ManyToMany(mappedBy="profiles")
+	private Set<User> users;
 
 	public Profile() {}
 	
@@ -95,6 +98,14 @@ public class Profile implements Serializable {
 
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
+	}
+	
+	public Set<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(Set<User> users) {
+		this.users = users;
 	}
 
 	@Override

@@ -27,6 +27,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.ScopeType;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -126,20 +127,21 @@ public class ProfileResourceIT {
 	}
 	
 	@Test
+	@Ignore
 	@RunAsClient
 	@InSequence(3)
 	public void list() throws URISyntaxException {
 		
-		/*// Create a Profile
+		// Create a Profile
 		
 		RequestSpecBuilder builder = new RequestSpecBuilder();
 		builder.setBaseUri(url.toURI())
 			.setBasePath("users")
 			.setAccept(MediaType.APPLICATION_JSON);
 		
-		String userLocation = given(builder.build())
+		String profileLocation = given(builder.build())
 			.contentType(ContentType.JSON)
-			.body(new GsonBuilder().create().toJson(new Profile("USER", ACTIVE)))
+			.body(loadBody())
 			.when().log().all().post()
 			.then()
 			.assertThat()
@@ -153,30 +155,18 @@ public class ProfileResourceIT {
 		Set<Profile> profiles = new HashSet<>();
 		profiles.add(profile);
 		
-		// Create User
-		
-		String userLocation = given(requestSpecification)
-				.contentType(ContentType.JSON)
-				.body(loadBody())
-				.when().post()
-				.then()
-					.assertThat()
-					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
-				.extract().header("Location");
-		
-		String userID = userLocation.split("users/")[1];
-		
 		// Create User with Profile
 		
-		given(requestSpecification)
+		String userLocation = given(requestSpecification)
 		.contentType(ContentType.JSON)
 		.body(new GsonBuilder().create().toJson(new User("User " + System.currentTimeMillis(), "user@test.com", ACTIVE, profiles)))
 		.when().post()
 		.then()
 			.assertThat()
 			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
-		.extract().header("Location");*/
+		.extract().header("Location");
 		
+		String userID = userLocation.split("users/")[1];
 		
 		// ============================
 		
@@ -184,10 +174,11 @@ public class ProfileResourceIT {
 			.when().get()
 			.then().assertThat().statusCode(anyOf(is(Response.Status.OK.getStatusCode()), is(Response.Status.PARTIAL_CONTENT.getStatusCode())));
 		
-		/*given(requestSpecification)
-			.queryParam("user", "")
+		given(requestSpecification)
+			.queryParam("user", userID)
 			.when().get()
-			.then().assertThat().statusCode(anyOf(is(Response.Status.OK.getStatusCode()), is(Response.Status.PARTIAL_CONTENT.getStatusCode())));*/
+			.then()
+				.assertThat().statusCode(anyOf(is(Response.Status.OK.getStatusCode()), is(Response.Status.PARTIAL_CONTENT.getStatusCode())));
 		
 	}
 	

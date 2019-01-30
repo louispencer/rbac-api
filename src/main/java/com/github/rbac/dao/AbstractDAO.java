@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,6 +16,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.transaction.Transactional;
@@ -25,7 +27,11 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 	EntityManager em;
 
 	private final Class<T> clazz;
-
+	protected CriteriaBuilder builder;
+	protected CriteriaQuery<T> query;
+	protected Root<T> root; 
+	protected List<Predicate> restrictions = new ArrayList<Predicate>();
+	
 	@SuppressWarnings("unchecked")
 	public AbstractDAO() {
 		Type type = getClass().getGenericSuperclass();
@@ -40,6 +46,13 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 
 		this.clazz = (Class<T>) ((ParameterizedType) type).getActualTypeArguments()[0];
 	}
+	
+	@PostConstruct
+	private void init() {
+		builder = em.getCriteriaBuilder();
+	    query = builder.createQuery(clazz);
+        root = (Root<T>) query.from(clazz).alias(clazz.getSimpleName().toLowerCase());
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<T> list() {
@@ -48,12 +61,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 	
 	protected List<T> listWithCriteria(final List<?> fields) {
 		
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		builder = em.getCriteriaBuilder();
-	    CriteriaQuery<T> query = builder.createQuery(clazz);
-        Root<T> root = (Root<T>) query.from(clazz).alias(clazz.getSimpleName().toLowerCase());
-        
-        if ( !fields.isEmpty() ) {
+		if ( !fields.isEmpty() ) {
 			
 			List<Expression<?>> fieldsList = new ArrayList<Expression<?>>();
 			
