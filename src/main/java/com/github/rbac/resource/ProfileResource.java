@@ -38,7 +38,7 @@ public class ProfileResource {
 	
 	@GET
 	public Response list(@QueryParam("user") Long user) {
-		return Response.ok(dao.list()).build();
+		return Response.ok(dao.filter(user)).build();
 	}
 	
 	@GET

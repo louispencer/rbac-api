@@ -30,7 +30,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 	protected CriteriaBuilder builder;
 	protected CriteriaQuery<T> query;
 	protected Root<T> root; 
-	protected List<Predicate> restrictions = new ArrayList<Predicate>();
+	// protected List<Predicate> restrictions = new ArrayList<Predicate>();
 	
 	@SuppressWarnings("unchecked")
 	public AbstractDAO() {
@@ -57,6 +57,30 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 	@SuppressWarnings("unchecked")
 	public List<T> list() {
 		return em.createQuery("select o from " + clazz.getSimpleName() + " o").getResultList();
+	}
+	
+	protected List<T> listWithCriteria(final List<?> fields, final List<Predicate> restrictions) {
+		
+		if ( !fields.isEmpty() ) {
+			
+			List<Expression<?>> fieldsList = new ArrayList<Expression<?>>();
+			
+			fields.forEach(f -> fieldsList.add(root.get(f.toString())));
+			
+			final List<Selection<?>> selectionList = new ArrayList<>();
+			selectionList.addAll(fieldsList);
+			
+			query.multiselect(selectionList);
+			
+		}
+		
+		if ( !restrictions.isEmpty() ) {
+			query.where(restrictions.toArray(new Predicate[restrictions.size()]));
+		}
+        
+        TypedQuery<T> typedQuery = em.createQuery(query);
+		
+		return typedQuery.getResultList();
 	}
 	
 	protected List<T> listWithCriteria(final List<?> fields) {
