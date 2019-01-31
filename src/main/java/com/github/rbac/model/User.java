@@ -55,7 +55,7 @@ public class User implements Serializable {
 	@ManyToMany
 	@JoinTable(name="users_profiles", joinColumns=@JoinColumn(name="user"), inverseJoinColumns=@JoinColumn(name="profile"))
 	private Set<Profile> profiles;
-
+	
 	public User() {
 		super();
 	}
@@ -66,6 +66,23 @@ public class User implements Serializable {
 		this.email = email;
 		this.password = password;
 		this.active = active;
+	}
+	
+	public User(String name, String email, String password, Boolean active, Set<Profile> profiles) {
+		super();
+		this.name = name;
+		this.email = email;
+		this.password = password;
+		this.active = active;
+		this.profiles = profiles;
+	}
+	
+	public User(String name, String email, Boolean active, Set<Profile> profiles) {
+		super();
+		this.name = name;
+		this.email = email;
+		this.active = active;
+		this.profiles = profiles;
 	}
 	
 	public User(Long id, String name, String email, Date registeredIn, Boolean active) {

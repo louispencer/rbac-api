@@ -8,6 +8,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.github.rbac.model.Profile;
+import com.github.rbac.model.User;
 import com.google.gson.GsonBuilder;
 
 import io.restassured.builder.RequestSpecBuilder;
@@ -125,13 +128,66 @@ public class ProfileResourceIT {
 	@Test
 	@RunAsClient
 	@InSequence(3)
-	public void list() {
+	public void list() throws URISyntaxException {
+		
+		/*// Create a Profile
+		
+		RequestSpecBuilder builder = new RequestSpecBuilder();
+		builder.setBaseUri(url.toURI())
+			.setBasePath("users")
+			.setAccept(MediaType.APPLICATION_JSON);
+		
+		String userLocation = given(builder.build())
+			.contentType(ContentType.JSON)
+			.body(new GsonBuilder().create().toJson(new Profile("USER", ACTIVE)))
+			.when().log().all().post()
+			.then()
+			.assertThat()
+			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))	
+			.extract().header("Location");
+		
+		String id = profileLocation.split("profiles/")[1];
+		Profile profile = new Profile();
+		profile.setId(Long.valueOf(id));
+		
+		Set<Profile> profiles = new HashSet<>();
+		profiles.add(profile);
+		
+		// Create User
+		
+		String userLocation = given(requestSpecification)
+				.contentType(ContentType.JSON)
+				.body(loadBody())
+				.when().post()
+				.then()
+					.assertThat()
+					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
+				.extract().header("Location");
+		
+		String userID = userLocation.split("users/")[1];
+		
+		// Create User with Profile
 		
 		given(requestSpecification)
-			.when()
-				.get()
-			.then()
-				.assertThat().statusCode(anyOf(is(Response.Status.OK.getStatusCode()), is(Response.Status.PARTIAL_CONTENT.getStatusCode())));
+		.contentType(ContentType.JSON)
+		.body(new GsonBuilder().create().toJson(new User("User " + System.currentTimeMillis(), "user@test.com", ACTIVE, profiles)))
+		.when().post()
+		.then()
+			.assertThat()
+			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
+		.extract().header("Location");*/
+		
+		
+		// ============================
+		
+		given(requestSpecification)
+			.when().get()
+			.then().assertThat().statusCode(anyOf(is(Response.Status.OK.getStatusCode()), is(Response.Status.PARTIAL_CONTENT.getStatusCode())));
+		
+		/*given(requestSpecification)
+			.queryParam("user", "")
+			.when().get()
+			.then().assertThat().statusCode(anyOf(is(Response.Status.OK.getStatusCode()), is(Response.Status.PARTIAL_CONTENT.getStatusCode())));*/
 		
 	}
 	
@@ -182,6 +238,23 @@ public class ProfileResourceIT {
 			.when().delete("/{id}")
 			.then()
 				.assertThat().statusCode(is(Response.Status.NO_CONTENT.getStatusCode()));
+		
+	}
+	
+	@Test
+	@RunAsClient
+	@InSequence(6)
+	public void notFound() {
+		
+		String id = String.valueOf(System.currentTimeMillis());
+		
+		given(requestSpecification)
+			.pathParam("id", id)
+			.contentType(ContentType.JSON)
+			.when().get("/{id}")
+			.then()
+				.assertThat().statusCode(is(Response.Status.NOT_FOUND.getStatusCode()))
+				.assertThat().body(notNullValue());
 		
 	}
 

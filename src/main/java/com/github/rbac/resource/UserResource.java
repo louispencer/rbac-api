@@ -1,6 +1,8 @@
 package com.github.rbac.resource;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -12,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -45,7 +48,12 @@ public class UserResource {
 	@GET
 	@Path("/{id}")
 	public Response get(@PathParam("id") Long id) {
-		return Response.ok(dao.find(id)).build();
+		
+		return Response
+				.ok(dao.find(id))
+				.links(loadLinks(id, info).toArray(new Link[0]))
+				.build();
+		
 	}
 	
 	@POST
@@ -80,6 +88,21 @@ public class UserResource {
 		rb.status(Status.NO_CONTENT);
 		dao.remove(id);
 		return rb.build();
+	}
+	
+	private List<Link> loadLinks(Long id, UriInfo info) {
+		
+		UriBuilder uriBuilder = info.getBaseUriBuilder();
+	    uriBuilder = uriBuilder.path(UserResource.class).path(String.valueOf(id));
+	    
+	    Link self = Link.fromUriBuilder(uriBuilder).rel("self").type(MediaType.APPLICATION_JSON).build();
+	    Link profiles = Link.fromUriBuilder(uriBuilder.path(ProfileResource.class).queryParam("user", id)).rel("profiles").type(MediaType.APPLICATION_JSON).build();
+	    
+	    List<Link> links = new ArrayList<>();
+		links.add(self);
+		links.add(profiles);
+		
+		return links;
 	}
 
 }

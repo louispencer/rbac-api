@@ -75,6 +75,31 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 		return em.find(clazz, id);
 	}
 	
+	protected T findWithCriteria(final List<?> fields) {
+		
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		builder = em.getCriteriaBuilder();
+	    CriteriaQuery<T> query = builder.createQuery(clazz);
+        Root<T> root = (Root<T>) query.from(clazz).alias(clazz.getSimpleName().toLowerCase());
+        
+        if ( !fields.isEmpty() ) {
+			
+			List<Expression<?>> fieldsList = new ArrayList<Expression<?>>();
+			
+			fields.forEach(f -> fieldsList.add(root.get(f.toString())));
+			
+			final List<Selection<?>> selectionList = new ArrayList<>();
+			selectionList.addAll(fieldsList);
+			
+			query.multiselect(selectionList);
+			
+		}
+        
+        TypedQuery<T> typedQuery = em.createQuery(query);
+		
+		return typedQuery.getSingleResult();
+	}
+	
 	@SuppressWarnings("unchecked")
 	protected T findWithGraph(Long id, String namedGraph) {
 		

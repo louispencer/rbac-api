@@ -9,9 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -20,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "roles")
-@NamedEntityGraph(name="role.graph",attributeNodes=@NamedAttributeNode("profiles"))
 @JsonInclude(value=Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Role implements Serializable {
@@ -36,9 +32,6 @@ public class Role implements Serializable {
 
 	@Column
 	private Boolean active;
-
-	@ManyToMany(mappedBy = "roles")
-	private Set<Profile> profiles;
 
 	public Role() {
 	}
@@ -60,7 +53,6 @@ public class Role implements Serializable {
 		super();
 		this.description = description;
 		this.active = active;
-		this.profiles = profiles;
 	}
 
 	public Long getId() {
@@ -85,14 +77,6 @@ public class Role implements Serializable {
 
 	public void setActive(Boolean active) {
 		this.active = active;
-	}
-
-	public Set<Profile> getProfiles() {
-		return profiles;
-	}
-
-	public void setProfiles(Set<Profile> profiles) {
-		this.profiles = profiles;
 	}
 
 	@Override
