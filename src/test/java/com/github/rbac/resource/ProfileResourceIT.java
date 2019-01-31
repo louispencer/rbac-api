@@ -89,10 +89,11 @@ public class ProfileResourceIT {
 	@RunAsClient
 	@InSequence(1)
 	public void create() {
+		
 		given(requestSpecification)
 				.contentType(ContentType.JSON)
 				.body(loadBody())
-				.when().log().all().post()
+				.when().post()
 				.then()
 					.assertThat()
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()));
@@ -130,17 +131,12 @@ public class ProfileResourceIT {
 	@InSequence(3)
 	public void list() throws URISyntaxException {
 		
-		/*// Create a Profile
+		// Create a Profile
 		
-		RequestSpecBuilder builder = new RequestSpecBuilder();
-		builder.setBaseUri(url.toURI())
-			.setBasePath("users")
-			.setAccept(MediaType.APPLICATION_JSON);
-		
-		String userLocation = given(builder.build())
+		String profileLocation = given(requestSpecification)
 			.contentType(ContentType.JSON)
-			.body(new GsonBuilder().create().toJson(new Profile("USER", ACTIVE)))
-			.when().log().all().post()
+			.body(loadBody())
+			.when().post()
 			.then()
 			.assertThat()
 			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))	
@@ -153,30 +149,23 @@ public class ProfileResourceIT {
 		Set<Profile> profiles = new HashSet<>();
 		profiles.add(profile);
 		
-		// Create User
-		
-		String userLocation = given(requestSpecification)
-				.contentType(ContentType.JSON)
-				.body(loadBody())
-				.when().post()
-				.then()
-					.assertThat()
-					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
-				.extract().header("Location");
-		
-		String userID = userLocation.split("users/")[1];
-		
 		// Create User with Profile
 		
-		given(requestSpecification)
-		.contentType(ContentType.JSON)
-		.body(new GsonBuilder().create().toJson(new User("User " + System.currentTimeMillis(), "user@test.com", ACTIVE, profiles)))
-		.when().post()
-		.then()
-			.assertThat()
-			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
-		.extract().header("Location");*/
+		RequestSpecBuilder builder = new RequestSpecBuilder();
+		builder.setBaseUri(url.toURI())
+			.setBasePath("users")
+			.setAccept(MediaType.APPLICATION_JSON);
 		
+		String userLocation = given(builder.build())
+			.contentType(ContentType.JSON)
+			.body(new GsonBuilder().create().toJson(new User("User " + System.currentTimeMillis(), "user@test.com", ACTIVE, profiles)))
+			.when().post()
+			.then()
+				.assertThat()
+				.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
+			.extract().header("Location");
+		
+		String userID = userLocation.split("users/")[1];
 		
 		// ============================
 		
@@ -184,10 +173,11 @@ public class ProfileResourceIT {
 			.when().get()
 			.then().assertThat().statusCode(anyOf(is(Response.Status.OK.getStatusCode()), is(Response.Status.PARTIAL_CONTENT.getStatusCode())));
 		
-		/*given(requestSpecification)
-			.queryParam("user", "")
+		given(requestSpecification)
+			.queryParam("user", userID)
 			.when().get()
-			.then().assertThat().statusCode(anyOf(is(Response.Status.OK.getStatusCode()), is(Response.Status.PARTIAL_CONTENT.getStatusCode())));*/
+			.then()
+				.assertThat().statusCode(anyOf(is(Response.Status.OK.getStatusCode()), is(Response.Status.PARTIAL_CONTENT.getStatusCode())));
 		
 	}
 	
@@ -210,7 +200,8 @@ public class ProfileResourceIT {
 		given(requestSpecification)
 			.pathParam("id", id)
 			.contentType(ContentType.JSON)
-			.when().get("/{id}")
+			.when()
+			.get("/{id}")
 			.then()
 				.assertThat().statusCode(is(Response.Status.OK.getStatusCode()))
 				.assertThat().body(notNullValue());
@@ -235,7 +226,8 @@ public class ProfileResourceIT {
 		
 		given(requestSpecification)
 			.pathParam("id", id)
-			.when().delete("/{id}")
+			.when().log().all()
+			.delete("/{id}")
 			.then()
 				.assertThat().statusCode(is(Response.Status.NO_CONTENT.getStatusCode()));
 		

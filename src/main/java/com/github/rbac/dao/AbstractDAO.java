@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,6 +16,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.transaction.Transactional;
@@ -25,7 +27,10 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 	EntityManager em;
 
 	private final Class<T> clazz;
-
+	protected CriteriaBuilder builder;
+	protected CriteriaQuery<T> query;
+	protected Root<T> root; 
+	
 	@SuppressWarnings("unchecked")
 	public AbstractDAO() {
 		Type type = getClass().getGenericSuperclass();
@@ -40,20 +45,46 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 
 		this.clazz = (Class<T>) ((ParameterizedType) type).getActualTypeArguments()[0];
 	}
+	
+	@PostConstruct
+	private void init() {
+		builder = em.getCriteriaBuilder();
+	    query = builder.createQuery(clazz);
+        root = (Root<T>) query.from(clazz).alias(clazz.getSimpleName().toLowerCase());
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<T> list() {
 		return em.createQuery("select o from " + clazz.getSimpleName() + " o").getResultList();
 	}
 	
+	protected List<T> listWithCriteria(final List<?> fields, final List<Predicate> restrictions) {
+		
+		if ( !fields.isEmpty() ) {
+			
+			List<Expression<?>> fieldsList = new ArrayList<Expression<?>>();
+			
+			fields.forEach(f -> fieldsList.add(root.get(f.toString())));
+			
+			final List<Selection<?>> selectionList = new ArrayList<>();
+			selectionList.addAll(fieldsList);
+			
+			query.multiselect(selectionList);
+			
+		}
+		
+		if ( !restrictions.isEmpty() ) {
+			query.where(restrictions.toArray(new Predicate[restrictions.size()]));
+		}
+        
+        TypedQuery<T> typedQuery = em.createQuery(query);
+		
+		return typedQuery.getResultList();
+	}
+	
 	protected List<T> listWithCriteria(final List<?> fields) {
 		
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		builder = em.getCriteriaBuilder();
-	    CriteriaQuery<T> query = builder.createQuery(clazz);
-        Root<T> root = (Root<T>) query.from(clazz).alias(clazz.getSimpleName().toLowerCase());
-        
-        if ( !fields.isEmpty() ) {
+		if ( !fields.isEmpty() ) {
 			
 			List<Expression<?>> fieldsList = new ArrayList<Expression<?>>();
 			
@@ -75,7 +106,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 		return em.find(clazz, id);
 	}
 	
-	protected T findWithCriteria(final List<?> fields) {
+	protected T findWithCriteria(final Long id, final List<?> fields) {
 		
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		builder = em.getCriteriaBuilder();
@@ -95,6 +126,8 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 			
 		}
         
+        query.where(builder.and(builder.equal(root.get("id"), id)));
+		
         TypedQuery<T> typedQuery = em.createQuery(query);
 		
 		return typedQuery.getSingleResult();
@@ -118,7 +151,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 
 	@Transactional
 	public void remove(Long id) {
-		em.remove(find(id));
+		em.remove(em.merge(find(id)));
 	}
 
 }

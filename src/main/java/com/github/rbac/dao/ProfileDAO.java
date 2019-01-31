@@ -1,30 +1,39 @@
 package com.github.rbac.dao;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.criteria.Predicate;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
 import com.github.rbac.model.Profile;
 
-public class ProfileDAO extends AbstractDAO<Profile> implements DAO<Profile> {
+public class ProfileDAO extends AbstractDAO<Profile> {
 	
 	private final List<String> fields = Arrays.asList("id","description","active");
 	
-	@Override
-	public List<Profile> list() {
-		return listWithCriteria(fields);
+	
+	public List<Profile> filter(final Long user) {
+		List<Predicate> restrictions = new ArrayList<Predicate>();
+		if (user!=null && user>0L) {
+			restrictions.add(root.join("users").in(user));
+		}
+		return listWithCriteria(fields, restrictions);
 	}
 	
 	@Override
 	public Profile find(Long id) {
-		
-		Profile profile = findWithCriteria(fields);
-		if (profile==null) {
-			throw new NotFoundException();
+		try {
+			return findWithCriteria(id, fields);
+		} catch (NoResultException e) {
+			throw new NotFoundException(); 
+		} catch (NonUniqueResultException e) {
+			throw new BadRequestException();
 		}
-		
-		return profile;
 	}
 
 }
