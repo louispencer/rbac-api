@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.criteria.Predicate;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
 import com.github.rbac.model.Profile;
@@ -24,13 +27,13 @@ public class ProfileDAO extends AbstractDAO<Profile> {
 	
 	@Override
 	public Profile find(Long id) {
-		
-		Profile profile = findWithCriteria(fields);
-		if (profile==null) {
-			throw new NotFoundException();
+		try {
+			return findWithCriteria(id, fields);
+		} catch (NoResultException e) {
+			throw new NotFoundException(); 
+		} catch (NonUniqueResultException e) {
+			throw new BadRequestException();
 		}
-		
-		return profile;
 	}
 
 }

@@ -30,7 +30,6 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 	protected CriteriaBuilder builder;
 	protected CriteriaQuery<T> query;
 	protected Root<T> root; 
-	// protected List<Predicate> restrictions = new ArrayList<Predicate>();
 	
 	@SuppressWarnings("unchecked")
 	public AbstractDAO() {
@@ -107,7 +106,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 		return em.find(clazz, id);
 	}
 	
-	protected T findWithCriteria(final List<?> fields) {
+	protected T findWithCriteria(final Long id, final List<?> fields) {
 		
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		builder = em.getCriteriaBuilder();
@@ -127,6 +126,8 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 			
 		}
         
+        query.where(builder.and(builder.equal(root.get("id"), id)));
+		
         TypedQuery<T> typedQuery = em.createQuery(query);
 		
 		return typedQuery.getSingleResult();
@@ -150,7 +151,7 @@ public abstract class AbstractDAO<T> implements DAO<T> {
 
 	@Transactional
 	public void remove(Long id) {
-		em.remove(find(id));
+		em.remove(em.merge(find(id)));
 	}
 
 }

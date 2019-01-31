@@ -27,7 +27,6 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.ScopeType;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -90,10 +89,11 @@ public class ProfileResourceIT {
 	@RunAsClient
 	@InSequence(1)
 	public void create() {
+		
 		given(requestSpecification)
 				.contentType(ContentType.JSON)
 				.body(loadBody())
-				.when().log().all().post()
+				.when().post()
 				.then()
 					.assertThat()
 					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()));
@@ -127,22 +127,16 @@ public class ProfileResourceIT {
 	}
 	
 	@Test
-	@Ignore
 	@RunAsClient
 	@InSequence(3)
 	public void list() throws URISyntaxException {
 		
 		// Create a Profile
 		
-		RequestSpecBuilder builder = new RequestSpecBuilder();
-		builder.setBaseUri(url.toURI())
-			.setBasePath("users")
-			.setAccept(MediaType.APPLICATION_JSON);
-		
-		String profileLocation = given(builder.build())
+		String profileLocation = given(requestSpecification)
 			.contentType(ContentType.JSON)
 			.body(loadBody())
-			.when().log().all().post()
+			.when().post()
 			.then()
 			.assertThat()
 			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))	
@@ -157,14 +151,19 @@ public class ProfileResourceIT {
 		
 		// Create User with Profile
 		
-		String userLocation = given(requestSpecification)
-		.contentType(ContentType.JSON)
-		.body(new GsonBuilder().create().toJson(new User("User " + System.currentTimeMillis(), "user@test.com", ACTIVE, profiles)))
-		.when().post()
-		.then()
-			.assertThat()
-			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
-		.extract().header("Location");
+		RequestSpecBuilder builder = new RequestSpecBuilder();
+		builder.setBaseUri(url.toURI())
+			.setBasePath("users")
+			.setAccept(MediaType.APPLICATION_JSON);
+		
+		String userLocation = given(builder.build())
+			.contentType(ContentType.JSON)
+			.body(new GsonBuilder().create().toJson(new User("User " + System.currentTimeMillis(), "user@test.com", ACTIVE, profiles)))
+			.when().post()
+			.then()
+				.assertThat()
+				.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
+			.extract().header("Location");
 		
 		String userID = userLocation.split("users/")[1];
 		
@@ -201,7 +200,8 @@ public class ProfileResourceIT {
 		given(requestSpecification)
 			.pathParam("id", id)
 			.contentType(ContentType.JSON)
-			.when().get("/{id}")
+			.when()
+			.get("/{id}")
 			.then()
 				.assertThat().statusCode(is(Response.Status.OK.getStatusCode()))
 				.assertThat().body(notNullValue());
@@ -226,7 +226,8 @@ public class ProfileResourceIT {
 		
 		given(requestSpecification)
 			.pathParam("id", id)
-			.when().delete("/{id}")
+			.when().log().all()
+			.delete("/{id}")
 			.then()
 				.assertThat().statusCode(is(Response.Status.NO_CONTENT.getStatusCode()));
 		
