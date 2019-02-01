@@ -12,8 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -22,10 +20,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "profiles")
-@NamedEntityGraph(name="profile.graph",attributeNodes=@NamedAttributeNode("roles"))
 @JsonInclude(value=Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class Profile implements Serializable {
+public class Profile implements Serializable, ModelEntity {
 
 	private static final long serialVersionUID = 2719175420702043748L;
 	
@@ -43,7 +40,8 @@ public class Profile implements Serializable {
 	@JoinTable(name="profiles_roles", joinColumns=@JoinColumn(name="profile"), inverseJoinColumns=@JoinColumn(name="role"))
 	private Set<Role> roles;
 	
-	@ManyToMany(mappedBy="profiles")
+	@ManyToMany
+	@JoinTable(name="users_profiles", joinColumns=@JoinColumn(name="profile"), inverseJoinColumns=@JoinColumn(name="user"))
 	private Set<User> users;
 
 	public Profile() {}
@@ -66,6 +64,31 @@ public class Profile implements Serializable {
 		super();
 		this.description = description;
 		this.active = active;
+	}
+	
+	public Profile(Long id, String description, Boolean active, Set<Role> roles) {
+		super();
+		this.id = id;
+		this.description = description;
+		this.active = active;
+		this.roles = roles;
+	}
+	
+	public Profile(Long id, String description, Boolean active, Set<Role> roles, Set<User> users) {
+		super();
+		this.id = id;
+		this.description = description;
+		this.active = active;
+		this.roles = roles;
+		this.users = users;
+	}
+	
+	public Profile(String description, Boolean active, Set<Role> roles, Set<User> users) {
+		super();
+		this.description = description;
+		this.active = active;
+		this.roles = roles;
+		this.users = users;
 	}
 
 	public Long getId() {

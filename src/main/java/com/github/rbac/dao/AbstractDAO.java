@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.TypedQuery;
@@ -21,7 +22,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.transaction.Transactional;
 
-public abstract class AbstractDAO<T> implements DAO<T> {
+import com.github.rbac.model.ModelEntity;
+
+public abstract class AbstractDAO<T extends ModelEntity> implements DAO<T> {
 
 	@PersistenceContext(type = PersistenceContextType.EXTENDED)
 	EntityManager em;
@@ -141,12 +144,25 @@ public abstract class AbstractDAO<T> implements DAO<T> {
     	Map<String, Object> properties = new HashMap<>();
     	properties.put("javax.persistence.fetchgraph", eg);
     	
-		return em.find(clazz, id, properties);
+    	T entity = em.find(clazz, id, properties);
+    	
+    	if (entity==null) {
+    		throw new NoResultException();
+    	}
+    	
+		return entity;
 	}
 
 	@Transactional
-	public T save(T entity) {
-		return em.merge(entity);
+	public Long create(T entity) {
+		em.persist(entity);
+		em.flush();
+		return entity.getId();
+	}
+	
+	@Transactional
+	public void update(T entity) {
+		em.merge(entity);
 	}
 
 	@Transactional

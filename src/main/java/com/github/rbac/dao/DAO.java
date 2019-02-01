@@ -2,13 +2,17 @@ package com.github.rbac.dao;
 
 import java.util.List;
 
-public interface DAO<T> {
+import com.github.rbac.model.ModelEntity;
+
+public interface DAO<T extends ModelEntity> {
 	
 	List<T> list();
 	
 	T find(Long id);
 	
-	T save(T entity);
+	Long create(T entity);
+	
+	void update(T entity);
 	
 	void remove(Long id);
 	

@@ -3,18 +3,12 @@ package com.github.rbac.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,10 +19,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @Entity
 @Table(name = "users")
-@NamedEntityGraph(name="user.graph",attributeNodes=@NamedAttributeNode("profiles"))
 @JsonInclude(value=Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class User implements Serializable {
+public class User implements Serializable, ModelEntity {
 
 	private static final long serialVersionUID = -8439381633589353151L;
 	
@@ -51,11 +44,7 @@ public class User implements Serializable {
 	
 	@Column
 	private Boolean active;
-	
-	@ManyToMany
-	@JoinTable(name="users_profiles", joinColumns=@JoinColumn(name="user"), inverseJoinColumns=@JoinColumn(name="profile"))
-	private Set<Profile> profiles;
-	
+
 	public User() {
 		super();
 	}
@@ -66,23 +55,6 @@ public class User implements Serializable {
 		this.email = email;
 		this.password = password;
 		this.active = active;
-	}
-	
-	public User(String name, String email, String password, Boolean active, Set<Profile> profiles) {
-		super();
-		this.name = name;
-		this.email = email;
-		this.password = password;
-		this.active = active;
-		this.profiles = profiles;
-	}
-	
-	public User(String name, String email, Boolean active, Set<Profile> profiles) {
-		super();
-		this.name = name;
-		this.email = email;
-		this.active = active;
-		this.profiles = profiles;
 	}
 	
 	public User(Long id, String name, String email, Date registeredIn, Boolean active) {
@@ -148,14 +120,6 @@ public class User implements Serializable {
 	public void setActive(Boolean active) {
 		this.active = active;
 	}	
-
-	public Set<Profile> getProfiles() {
-		return profiles;
-	}
-
-	public void setProfiles(Set<Profile> profiles) {
-		this.profiles = profiles;
-	}
 
 	@Override
 	public int hashCode() {

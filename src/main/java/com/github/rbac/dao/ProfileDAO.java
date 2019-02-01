@@ -28,7 +28,7 @@ public class ProfileDAO extends AbstractDAO<Profile> {
 	@Override
 	public Profile find(Long id) {
 		try {
-			return findWithCriteria(id, fields);
+			return findWithGraph(id, "profile.graph");
 		} catch (NoResultException e) {
 			throw new NotFoundException(); 
 		} catch (NonUniqueResultException e) {

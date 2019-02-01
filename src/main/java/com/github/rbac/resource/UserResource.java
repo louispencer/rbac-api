@@ -64,7 +64,7 @@ public class UserResource {
 		UriBuilder uriBuilder = info.getAbsolutePathBuilder();
 		user.setRegisteredIn(new Date());
 		user.setActive(true);
-		Long id = dao.save(user).getId();		
+		Long id = dao.create(user);		
 		uriBuilder.path(String.valueOf(id));
 		rb.header("Location", uriBuilder.build() );
 		
@@ -77,7 +77,8 @@ public class UserResource {
 	@Transactional
 	public Response update(@PathParam("id") Long id, User user) {
 		user.setId(id);
-		return Response.ok(dao.save(user)).build();
+		dao.update(user);
+		return Response.ok(dao.find(id)).build();
 	}
 	
 	@DELETE

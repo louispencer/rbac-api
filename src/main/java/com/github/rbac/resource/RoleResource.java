@@ -53,7 +53,7 @@ public class RoleResource {
 		ResponseBuilder rb = new ResponseBuilderImpl();
 		UriBuilder uriBuilder = info.getAbsolutePathBuilder();
 		role.setActive(true);
-		Long id = dao.save(role).getId();		
+		Long id = dao.create(role);		
 		uriBuilder.path(String.valueOf(id));
 		rb.header("Location", uriBuilder.build() );
 		
@@ -66,7 +66,8 @@ public class RoleResource {
 	@Transactional
 	public Response update(@PathParam("id") Long id, Role role) {
 		role.setId(id);
-		return Response.ok(dao.save(role)).build();
+		dao.update(role);
+		return Response.ok(dao.find(id)).build();
 	}
 	
 	@DELETE

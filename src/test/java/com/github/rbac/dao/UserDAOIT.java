@@ -61,7 +61,7 @@ public class UserDAOIT {
 	@Test
 	@InSequence(1)
 	public void save() {
-		Assert.assertNotNull(dao.save(new User(ATTR_NAME, ATTR_EMAIL, ATTR_PASSWORD, ATTR_ACTIVE)));
+		Assert.assertNotNull(dao.create(new User(ATTR_NAME, ATTR_EMAIL, ATTR_PASSWORD, ATTR_ACTIVE)));
 	}
 	
 	@Test
@@ -73,8 +73,8 @@ public class UserDAOIT {
 	@Test
 	@InSequence(3)
 	public void find() {
-		User user = dao.save(new User(ATTR_NAME, ATTR_EMAIL, ATTR_PASSWORD, ATTR_ACTIVE));
-		Assert.assertNotNull(dao.find(user.getId()));
+		Long user = dao.create(new User(ATTR_NAME, ATTR_EMAIL, ATTR_PASSWORD, ATTR_ACTIVE));
+		Assert.assertNotNull(dao.find(user));
 	}
 
 }

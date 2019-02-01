@@ -59,7 +59,7 @@ public class RoleDAOIT {
 	@Test
 	@InSequence(1)
 	public void saveTest() {
-		Assert.assertNotNull(dao.save(new Role(ATTR_DESCRIPTION, ATTR_ACTIVE, new HashSet<>())));
+		Assert.assertNotNull(dao.create(new Role(ATTR_DESCRIPTION, ATTR_ACTIVE, new HashSet<>())));
 	}
 	
 	@Test
@@ -72,8 +72,8 @@ public class RoleDAOIT {
 	@InSequence(3)
 	public void findTest() {
 		
-		Role role = dao.save(new Role(ATTR_DESCRIPTION, ATTR_ACTIVE, new HashSet<>()));
-		Assert.assertNotNull(dao.find(role.getId()));
+		Long role = dao.create(new Role(ATTR_DESCRIPTION, ATTR_ACTIVE, new HashSet<>()));
+		Assert.assertNotNull(dao.find(role));
 	}
 
 }

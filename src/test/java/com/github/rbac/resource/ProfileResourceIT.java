@@ -131,25 +131,7 @@ public class ProfileResourceIT {
 	@InSequence(3)
 	public void list() throws URISyntaxException {
 		
-		// Create a Profile
-		
-		String profileLocation = given(requestSpecification)
-			.contentType(ContentType.JSON)
-			.body(loadBody())
-			.when().post()
-			.then()
-			.assertThat()
-			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))	
-			.extract().header("Location");
-		
-		String id = profileLocation.split("profiles/")[1];
-		Profile profile = new Profile();
-		profile.setId(Long.valueOf(id));
-		
-		Set<Profile> profiles = new HashSet<>();
-		profiles.add(profile);
-		
-		// Create User with Profile
+		// Create User
 		
 		RequestSpecBuilder builder = new RequestSpecBuilder();
 		builder.setBaseUri(url.toURI())
@@ -158,7 +140,7 @@ public class ProfileResourceIT {
 		
 		String userLocation = given(builder.build())
 			.contentType(ContentType.JSON)
-			.body(new GsonBuilder().create().toJson(new User("User " + System.currentTimeMillis(), "user@test.com", ACTIVE, profiles)))
+			.body(new GsonBuilder().create().toJson(new User("User " + System.currentTimeMillis(), "user@test.com", ACTIVE)))
 			.when().post()
 			.then()
 				.assertThat()
@@ -167,7 +149,22 @@ public class ProfileResourceIT {
 		
 		String userID = userLocation.split("users/")[1];
 		
-		// ============================
+		User user = new User();
+		user.setId(Long.valueOf(userID));
+		
+		Set<User> users = new HashSet<>();
+		users.add(user);
+		
+		// Create a Profile
+		
+		given(requestSpecification)
+			.contentType(ContentType.JSON)
+			.body(new GsonBuilder().create().toJson(new Profile(DESCRIPTION, ACTIVE, new HashSet<>(), users)))
+			.when().post()
+			.then()
+			.assertThat()
+			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()));
+		
 		
 		given(requestSpecification)
 			.when().get()
@@ -226,7 +223,7 @@ public class ProfileResourceIT {
 		
 		given(requestSpecification)
 			.pathParam("id", id)
-			.when().log().all()
+			.when()
 			.delete("/{id}")
 			.then()
 				.assertThat().statusCode(is(Response.Status.NO_CONTENT.getStatusCode()));
@@ -243,7 +240,7 @@ public class ProfileResourceIT {
 		given(requestSpecification)
 			.pathParam("id", id)
 			.contentType(ContentType.JSON)
-			.when().get("/{id}")
+			.when().log().all().get("/{id}")
 			.then()
 				.assertThat().statusCode(is(Response.Status.NOT_FOUND.getStatusCode()))
 				.assertThat().body(notNullValue());

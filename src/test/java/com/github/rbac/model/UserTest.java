@@ -10,14 +10,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.rbac.model.User;
 import com.google.code.beanmatchers.BeanMatchers;
 import com.google.code.beanmatchers.ValueGenerator;
 
@@ -49,7 +47,7 @@ public class UserTest {
 		user.setEmail("test@test.com");
 		user.setName("Test User");
 		user.setPassword("password");
-		user.setProfiles(new HashSet<>());
+		// user.setProfiles(new HashSet<>());
 		user.setRegisteredIn(new Date());
 		
 		final byte[] serialazed = SerializationUtils.serialize(user);

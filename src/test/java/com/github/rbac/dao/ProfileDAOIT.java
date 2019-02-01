@@ -59,7 +59,7 @@ public class ProfileDAOIT {
 	@Test
 	@InSequence(1)
 	public void saveTest() {
-		Assert.assertNotNull(dao.save(new Profile(ATTR_DESCRIPTION, ATTR_ACTIVE, new HashSet<>())));
+		Assert.assertNotNull(dao.create(new Profile(ATTR_DESCRIPTION, ATTR_ACTIVE, new HashSet<>())));
 	}
 	
 	@Test
@@ -71,8 +71,8 @@ public class ProfileDAOIT {
 	@Test
 	@InSequence(3)
 	public void findTest() {
-		Profile profile = dao.save(new Profile(ATTR_DESCRIPTION, ATTR_ACTIVE, new HashSet<>()));
-		Assert.assertNotNull(dao.find(profile.getId()));
+		Long profile = dao.create(new Profile(ATTR_DESCRIPTION, ATTR_ACTIVE, new HashSet<>()));
+		Assert.assertNotNull(dao.find(profile));
 	}
 
 }

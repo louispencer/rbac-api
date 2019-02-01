@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @Table(name = "roles")
 @JsonInclude(value=Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class Role implements Serializable {
+public class Role implements Serializable, ModelEntity {
 
 	private static final long serialVersionUID = -4426951619843181851L;
 

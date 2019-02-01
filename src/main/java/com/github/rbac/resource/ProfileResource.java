@@ -54,7 +54,7 @@ public class ProfileResource {
 		ResponseBuilder rb = new ResponseBuilderImpl();
 		UriBuilder uriBuilder = info.getAbsolutePathBuilder();
 		profile.setActive(true);
-		Long id = dao.save(profile).getId();		
+		Long id = dao.create(profile);		
 		uriBuilder.path(String.valueOf(id));
 		rb.header("Location", uriBuilder.build() );
 		
@@ -67,7 +67,8 @@ public class ProfileResource {
 	@Transactional
 	public Response update(@PathParam("id") Long id, Profile profile) {
 		profile.setId(id);
-		return Response.ok(dao.save(profile)).build();
+		dao.update(profile);
+		return Response.ok(dao.find(id)).build();
 	}
 	
 	@DELETE

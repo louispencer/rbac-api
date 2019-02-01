@@ -253,7 +253,7 @@ public class UserResourceIT {
 		given(requestSpecification)
 			.pathParam("id", userID)
 			.contentType(ContentType.JSON)
-			.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, ACTIVE, profiles)))
+			.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, ACTIVE)))
 			.when().put("/{id}")
 			.then()
 				.assertThat().statusCode(is(Response.Status.OK.getStatusCode()));
@@ -262,7 +262,7 @@ public class UserResourceIT {
 		
 		given(requestSpecification)
 		.contentType(ContentType.JSON)
-		.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, ACTIVE, profiles)))
+		.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, ACTIVE)))
 		.when().post()
 		.then()
 			.assertThat()
