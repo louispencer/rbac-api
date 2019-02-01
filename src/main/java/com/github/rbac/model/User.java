@@ -13,9 +13,12 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Table(name = "users")
@@ -36,6 +39,7 @@ public class User implements Serializable, ModelEntity {
 	private String email;
 	
 	@Column
+	@JsonIgnore
 	private String password;
 	
 	@Column(updatable=false)
@@ -96,7 +100,7 @@ public class User implements Serializable, ModelEntity {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
+	@ApiModelProperty(hidden=true)
 	public String getPassword() {
 		return password;
 	}

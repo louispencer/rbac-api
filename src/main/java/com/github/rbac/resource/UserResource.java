@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,10 +29,15 @@ import com.github.rbac.dao.UserDAO;
 import com.github.rbac.model.User;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
-@Api
+@Consumes(MediaType.APPLICATION_JSON)
+@Api(value="Users Resource")
 public class UserResource {
 	
 	@Inject
@@ -41,13 +47,16 @@ public class UserResource {
 	UriInfo info;
 	
 	@GET
+	@ApiOperation(httpMethod="GET", response=User.class, value = "List all users", responseContainer="List")
 	public Response list() {
 		return Response.ok(dao.list()).build();
 	}
 	
 	@GET
 	@Path("/{id}")
-	public Response get(@PathParam("id") Long id) {
+	@ApiOperation(httpMethod="GET", response=User.class, value = "Get a unique user representation")
+	@ApiResponse(code = 404, message = "User not found")
+	public Response get(@ApiParam(value="Identify of user", required=true) @PathParam("id") Long id) {
 		
 		return Response
 				.ok(dao.find(id))
@@ -58,6 +67,8 @@ public class UserResource {
 	
 	@POST
 	@Transactional
+	@ApiOperation(httpMethod="POST", value = "Create a new user")
+	@ApiResponses({@ApiResponse(code = 409, message = "User already exists")})
 	public Response create(User user) {
 		
 		ResponseBuilder rb = new ResponseBuilderImpl();
@@ -75,7 +86,10 @@ public class UserResource {
 	@PUT
 	@Path("/{id}")
 	@Transactional
+	@ApiOperation(httpMethod="PUT", value = "Update a user")
+	@ApiResponses({@ApiResponse(code = 409, message = "User already exists"), @ApiResponse(code = 404, message = "User not found")})
 	public Response update(@PathParam("id") Long id, User user) {
+		dao.find(id);
 		user.setId(id);
 		dao.update(user);
 		return Response.ok(dao.find(id)).build();
@@ -84,6 +98,8 @@ public class UserResource {
 	@DELETE
 	@Path("/{id}")
 	@Transactional
+	@ApiOperation(httpMethod="DELETE", value = "Remove a user")
+	@ApiResponses({@ApiResponse(code = 404, message = "User not found")})
 	public Response remove(@PathParam("id") Long id) {
 		ResponseBuilder rb = new ResponseBuilderImpl();
 		rb.status(Status.NO_CONTENT);

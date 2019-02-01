@@ -22,12 +22,16 @@ import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 
 import com.github.rbac.dao.ProfileDAO;
 import com.github.rbac.model.Profile;
+import com.github.rbac.model.Role;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Path("/profiles")
 @Produces(MediaType.APPLICATION_JSON)
-@Api
+@Api(value="Profiles Resource")
 public class ProfileResource {
 	
 	@Inject
@@ -37,18 +41,23 @@ public class ProfileResource {
 	UriInfo info;
 	
 	@GET
+	@ApiOperation(httpMethod="GET", response=Role.class, value = "List all profiles", responseContainer="List")
 	public Response list(@QueryParam("user") Long user) {
 		return Response.ok(dao.filter(user)).build();
 	}
 	
 	@GET
 	@Path("/{id}")
+	@ApiOperation(httpMethod="GET", response=Role.class, value = "Get a unique profile representation")
+	@ApiResponse(code = 404, message = "Profile not found")
 	public Response get(@PathParam("id") Long id) {
 		return Response.ok(dao.find(id)).build();
 	}
 	
 	@POST
 	@Transactional
+	@ApiOperation(httpMethod="POST", value = "Create a new profile")
+	@ApiResponses({@ApiResponse(code = 409, message = "Profile already exists")})
 	public Response create(Profile profile) {
 		
 		ResponseBuilder rb = new ResponseBuilderImpl();
@@ -65,6 +74,8 @@ public class ProfileResource {
 	@PUT
 	@Path("/{id}")
 	@Transactional
+	@ApiOperation(httpMethod="PUT", value = "Update a profile")
+	@ApiResponses({@ApiResponse(code = 409, message = "Profile already exists"), @ApiResponse(code = 404, message = "Profile not found")})
 	public Response update(@PathParam("id") Long id, Profile profile) {
 		profile.setId(id);
 		dao.update(profile);
@@ -74,6 +85,8 @@ public class ProfileResource {
 	@DELETE
 	@Path("/{id}")
 	@Transactional
+	@ApiOperation(httpMethod="DELETE", value = "Remove a profile")
+	@ApiResponses({@ApiResponse(code = 404, message = "Profile not found")})
 	public Response remove(@PathParam("id") Long id) {
 		ResponseBuilder rb = new ResponseBuilderImpl();
 		rb.status(Status.NO_CONTENT);
