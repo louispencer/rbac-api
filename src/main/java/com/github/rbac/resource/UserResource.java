@@ -97,7 +97,7 @@ public class UserResource {
 	    uriBuilder = uriBuilder.path(UserResource.class).path(String.valueOf(id));
 	    
 	    Link self = Link.fromUriBuilder(uriBuilder).rel("self").type(MediaType.APPLICATION_JSON).build();
-	    Link profiles = Link.fromUriBuilder(uriBuilder.path(ProfileResource.class).queryParam("user", id)).rel("profiles").type(MediaType.APPLICATION_JSON).build();
+	    Link profiles = Link.fromUriBuilder(info.getBaseUriBuilder().path(ProfileResource.class).queryParam("user", id)).rel("profiles").type(MediaType.APPLICATION_JSON).build();
 	    
 	    List<Link> links = new ArrayList<>();
 		links.add(self);
