@@ -70,17 +70,20 @@ public class UserResource {
 	@ApiOperation(httpMethod="POST", value = "Create a new user")
 	@ApiResponses({@ApiResponse(code = 409, message = "User already exists")})
 	public Response create(User user) {
-		
 		ResponseBuilder rb = new ResponseBuilderImpl();
-		UriBuilder uriBuilder = info.getAbsolutePathBuilder();
-		user.setRegisteredIn(new Date());
-		user.setActive(true);
-		Long id = dao.create(user);		
-		uriBuilder.path(String.valueOf(id));
-		rb.header("Location", uriBuilder.build() );
 		
-		return rb.status(Status.CREATED).build();
-		
+		try {
+			UriBuilder uriBuilder = info.getAbsolutePathBuilder();
+			user.setRegisteredIn(new Date());
+			user.setActive(true);
+			Long id = dao.create(user);		
+			uriBuilder.path(String.valueOf(id));
+			rb.header("Location", uriBuilder.build() );
+			
+			return rb.status(Status.CREATED).build();
+		} catch (Exception e) {
+			return rb.status(Status.CONFLICT).build();
+		}
 	}
 	
 	@PUT
