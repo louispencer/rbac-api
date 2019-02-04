@@ -1,6 +1,7 @@
 package com.github.rbac.resource;
 
 import javax.inject.Inject;
+import javax.persistence.NonUniqueResultException;
 import javax.transaction.Transactional;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -60,13 +61,18 @@ public class RoleResource {
 	public Response create(Role role) {
 		
 		ResponseBuilder rb = new ResponseBuilderImpl();
-		UriBuilder uriBuilder = info.getAbsolutePathBuilder();
-		role.setActive(true);
-		Long id = dao.create(role);		
-		uriBuilder.path(String.valueOf(id));
-		rb.header("Location", uriBuilder.build() );
 		
-		return rb.status(Status.CREATED).build();
+		try {
+			UriBuilder uriBuilder = info.getAbsolutePathBuilder();
+			role.setActive(true);
+			Long id = dao.create(role);		
+			uriBuilder.path(String.valueOf(id));
+			rb.header("Location", uriBuilder.build() );
+			
+			return rb.status(Status.CREATED).build();
+		} catch (NonUniqueResultException e) {
+			return rb.status(Status.CONFLICT).build();
+		}
 		
 	}
 	

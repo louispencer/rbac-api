@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.persistence.NonUniqueResultException;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -81,7 +82,7 @@ public class UserResource {
 			rb.header("Location", uriBuilder.build() );
 			
 			return rb.status(Status.CREATED).build();
-		} catch (Exception e) {
+		} catch (NonUniqueResultException e) {
 			return rb.status(Status.CONFLICT).build();
 		}
 	}

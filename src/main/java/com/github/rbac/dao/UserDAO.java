@@ -46,7 +46,6 @@ public class UserDAO extends AbstractDAO<User> implements DAO<User> {
 		
 		return super.create(user);
 		
-		
 	}
 
 }
