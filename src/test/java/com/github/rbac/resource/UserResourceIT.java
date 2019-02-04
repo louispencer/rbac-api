@@ -8,8 +8,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -30,7 +28,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.github.rbac.model.Profile;
 import com.github.rbac.model.User;
 import com.google.gson.GsonBuilder;
 
@@ -210,70 +207,41 @@ public class UserResourceIT {
 	@Test
 	@RunAsClient
 	@InSequence(7)
-	public void bindProfile() throws URISyntaxException {
+	public void conflict() throws URISyntaxException {
 		
-		// Create a Profile
-		
-		RequestSpecBuilder builder = new RequestSpecBuilder();
-		builder.setBaseUri(url.toURI())
-			.setBasePath("profiles")
-			.setAccept(MediaType.APPLICATION_JSON);
-		
-		String profileLocation = given(builder.build())
-			.contentType(ContentType.JSON)
-			.body(new GsonBuilder().create().toJson(new Profile("USER", ACTIVE)))
-			.when().log().all().post()
-			.then()
-			.assertThat()
-			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))	
-			.extract().header("Location");
-		
-		String id = profileLocation.split("profiles/")[1];
-		Profile profile = new Profile();
-		profile.setId(Long.valueOf(id));
-		
-		Set<Profile> profiles = new HashSet<>();
-		profiles.add(profile);
+		String body = loadBody();
 		
 		// Create User
 		
-		String userLocation = given(requestSpecification)
+		given(requestSpecification)
 				.contentType(ContentType.JSON)
-				.body(loadBody())
+				.body(body)
 				.when().post()
 				.then()
 					.assertThat()
-					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
-				.extract().header("Location");
+					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()));
 		
-		String userID = userLocation.split("users/")[1];
-		
-		// Bind Profile to User
+		// Create Duplicate User
 		
 		given(requestSpecification)
-			.pathParam("id", userID)
 			.contentType(ContentType.JSON)
-			.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, ACTIVE)))
-			.when().put("/{id}")
+			.body(body)
+			.when().post()
 			.then()
-				.assertThat().statusCode(is(Response.Status.OK.getStatusCode()));
-		
-		// Create User with Profile
-		
-		given(requestSpecification)
-		.contentType(ContentType.JSON)
-		.body(new GsonBuilder().create().toJson(new User(NAME + System.currentTimeMillis(), EMAIL, ACTIVE)))
-		.when().post()
-		.then()
-			.assertThat()
-			.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()))
-		.extract().header("Location");
+				.assertThat().statusCode(is(Response.Status.CONFLICT.getStatusCode()));
 		
 		
 	}
 	
 	private static String loadBody() {
-		return new GsonBuilder().create().toJson(new User(NAME, EMAIL, PASSWORD, ACTIVE));
+		Long now = System.currentTimeMillis();
+		User user = new User();
+		user.setName(NAME + now);
+		user.setEmail(now + "@it.test.com");
+		user.setPassword(PASSWORD);
+		user.setActive(ACTIVE);
+		
+		return new GsonBuilder().create().toJson(user);
 	}
 
 }

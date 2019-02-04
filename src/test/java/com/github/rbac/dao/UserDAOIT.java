@@ -70,11 +70,22 @@ public class UserDAOIT {
 		Assert.assertNotNull(dao.list());
 	}
 	
+	@Transactional
 	@Test
 	@InSequence(3)
 	public void find() {
-		Long user = dao.create(new User(ATTR_NAME, ATTR_EMAIL, ATTR_PASSWORD, ATTR_ACTIVE));
-		Assert.assertNotNull(dao.find(user));
+		
+		Long now = System.currentTimeMillis();
+		
+		User user = new User();
+		user.setActive(ATTR_ACTIVE);
+		user.setPassword(ATTR_PASSWORD);
+		user.setEmail(now + "@test.com");
+		user.setName(ATTR_NAME + now);
+		
+		Long id = dao.create(user);
+		
+		Assert.assertNotNull(dao.find(id));
 	}
 
 }
