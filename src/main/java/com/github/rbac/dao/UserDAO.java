@@ -37,7 +37,7 @@ public class UserDAO extends AbstractDAO<User> implements DAO<User> {
 		
 		List<Predicate> restrictions = new ArrayList<Predicate>();
 		if (user!=null && !user.getEmail().equals("")) {
-			restrictions.add(builder.and(builder.equal(root.get("email"), user.getEmail())));
+			restrictions.add(builder.equal(root.get("email"), user.getEmail()));
 		}
 		
 		if (!listWithCriteria(fields, restrictions).isEmpty()) {

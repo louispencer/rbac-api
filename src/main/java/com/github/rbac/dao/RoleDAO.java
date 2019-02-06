@@ -38,7 +38,7 @@ public class RoleDAO extends AbstractDAO<Role> implements DAO<Role> {
 		List<Predicate> restrictions = new ArrayList<Predicate>();
 		
 		if ( role!=null && !role.getDescription().equals("") ) {
-			restrictions.add( builder.and(builder.equal(root.get("description"), role.getDescription())) );
+			restrictions.add( builder.equal(root.get("description"), role.getDescription()));
 		}
 		
 		if (!listWithCriteria(fields, restrictions).isEmpty()) {

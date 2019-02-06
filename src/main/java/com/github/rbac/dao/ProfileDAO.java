@@ -42,7 +42,7 @@ public class ProfileDAO extends AbstractDAO<Profile> {
 		List<Predicate> restrictions = new ArrayList<Predicate>();
 		
 		if ( profile!=null && !profile.getDescription().equals("") ) {
-			restrictions.add( builder.and(builder.equal(root.get("description"), profile.getDescription())) );
+			restrictions.add( builder.equal(root.get("description"), profile.getDescription()));
 		}
 		
 		if (!listWithCriteria(fields, restrictions).isEmpty()) {
