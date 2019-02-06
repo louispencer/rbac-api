@@ -68,11 +68,20 @@ public class ProfileDAOIT {
 		Assert.assertNotNull(dao.list());
 	}
 	
+	@Transactional
 	@Test
 	@InSequence(3)
 	public void findTest() {
-		Long profile = dao.create(new Profile(ATTR_DESCRIPTION, ATTR_ACTIVE, new HashSet<>()));
-		Assert.assertNotNull(dao.find(profile));
+		
+		Long now = System.currentTimeMillis();
+		
+		Profile profile = new Profile();
+		profile.setDescription(ATTR_DESCRIPTION + now);
+		profile.setActive(ATTR_ACTIVE);
+		
+		Long id = dao.create(profile);
+		
+		Assert.assertNotNull(dao.find(id));
 	}
 
 }

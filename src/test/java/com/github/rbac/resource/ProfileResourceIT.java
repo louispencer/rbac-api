@@ -246,10 +246,43 @@ public class ProfileResourceIT {
 				.assertThat().body(notNullValue());
 		
 	}
+	
+	@Test
+	@RunAsClient
+	@InSequence(7)
+	public void conflict() throws URISyntaxException {
+		
+		String body = loadBody();
+		
+		// Create Profile
+		
+		given(requestSpecification)
+				.contentType(ContentType.JSON)
+				.body(body)
+				.when().post()
+				.then()
+					.assertThat()
+					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()));
+		
+		// Create Duplicate Profile
+		
+		given(requestSpecification)
+			.contentType(ContentType.JSON)
+			.body(body)
+			.when().post()
+			.then()
+				.assertThat().statusCode(is(Response.Status.CONFLICT.getStatusCode()));
+		
+		
+	}
 
 
 	private static String loadBody() {
-		return new GsonBuilder().create().toJson(new Profile(DESCRIPTION, ACTIVE));
+		Long now = System.currentTimeMillis();
+		Profile profile = new Profile();
+		profile.setDescription(DESCRIPTION + now);
+		profile.setActive(ACTIVE);		
+		return new GsonBuilder().create().toJson(profile);
 	}
 
 

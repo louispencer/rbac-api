@@ -201,10 +201,43 @@ public class RoleResourceIT {
 				.assertThat().body(notNullValue());
 		
 	}
+	
+	@Test
+	@RunAsClient
+	@InSequence(7)
+	public void conflict() throws URISyntaxException {
+		
+		String body = loadBody();
+		
+		// Create Role
+		
+		given(requestSpecification)
+				.contentType(ContentType.JSON)
+				.body(body)
+				.when().post()
+				.then()
+					.assertThat()
+					.header("Location", notNullValue()).statusCode(is(Response.Status.CREATED.getStatusCode()));
+		
+		// Create Duplicate Role
+		
+		given(requestSpecification)
+			.contentType(ContentType.JSON)
+			.body(body)
+			.when().post()
+			.then()
+				.assertThat().statusCode(is(Response.Status.CONFLICT.getStatusCode()));
+		
+		
+	}
 
 
 	private static String loadBody() {
-		return new GsonBuilder().create().toJson(new Role(DESCRIPTION, ACTIVE));
+		Long now = System.currentTimeMillis();
+		Role role = new Role();
+		role.setDescription(DESCRIPTION + now);
+		role.setActive(ACTIVE);
+		return new GsonBuilder().create().toJson(role);
 	}
 
 

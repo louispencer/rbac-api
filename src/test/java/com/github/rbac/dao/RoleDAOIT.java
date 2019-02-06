@@ -68,12 +68,20 @@ public class RoleDAOIT {
 		Assert.assertNotNull(dao.list());
 	}
 	
+	@Transactional
 	@Test
 	@InSequence(3)
 	public void findTest() {
 		
-		Long role = dao.create(new Role(ATTR_DESCRIPTION, ATTR_ACTIVE, new HashSet<>()));
-		Assert.assertNotNull(dao.find(role));
+		Long now = System.currentTimeMillis();
+		
+		Role role = new Role();
+		role.setDescription(ATTR_DESCRIPTION + now);
+		role.setActive(ATTR_ACTIVE);
+		
+		Long id = dao.create(role);
+		
+		Assert.assertNotNull(dao.find(id));
 	}
 
 }
