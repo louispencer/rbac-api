@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.filipe</groupId>
   <artifactId>rbac-api</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <packaging>war</packaging>
   <name>${project.artifactId}</name>
   <description>rbac-api</description>
